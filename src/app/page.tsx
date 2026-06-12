@@ -13,7 +13,7 @@ import {
   Building,
   Briefcase,
   Clock,
-  DollarSign,
+  IndianRupee,
   Car,
   Bike,
   Calendar,
@@ -66,7 +66,7 @@ const loanCategories = [
   { 
     name: 'Payday Loan', 
     href: '/payday-loan', 
-    icon: DollarSign,
+    icon: IndianRupee,
     line1: 'Salary advance before payday',
     line2: 'Quick approval & easy repayment'
   },
