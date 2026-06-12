@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
-/* Coinbase Inspired Dark Theme */
+/* Coinbase Inspired White Theme */
 :root {
-  --background: #050a14;
-  --foreground: #ffffff;
+  --background: #ffffff;
+  --foreground: #050a14;
   --coinbase-blue: #0052ff;
   --coinbase-blue-hover: #003ecf;
-  --border-muted: #1a2332;
-  --surface-secondary: #101725;
-  --text-muted: #9ca3af;
+  --border-muted: #e5e7eb;
+  --surface-secondary: #f9fafb;
+  --text-muted: #6b7280;
 }
 
 @theme inline {
@@ -46,7 +46,7 @@ body {
 }
 
 .coinbase-card:hover {
-  border-color: #3b82f6;
+  border-color: #0052ff;
 }
 
 /* Focus visible for accessibility */

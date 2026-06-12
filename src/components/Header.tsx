@@ -22,37 +22,37 @@ export default function Header() {
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-50 bg-[#050a14] border-b border-[#1a2332]">
+    <header className="sticky top-0 z-50 bg-white border-b border-[#e5e7eb]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <Link href="/" className="flex items-center gap-2">
             <div className="bg-[#0052ff] p-2 rounded-2xl">
               <Zap className="h-7 w-7 text-white" />
             </div>
-            <span className="text-2xl font-bold text-white">
+            <span className="text-2xl font-bold text-[#050a14]">
               InstaMoney
             </span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
-            <Link href="/" className="text-gray-300 hover:text-white font-medium transition-colors">
+            <Link href="/" className="text-[#050a14] hover:text-[#0052ff] font-medium transition-colors">
               Home
             </Link>
             <div className="relative">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-2 text-gray-300 hover:text-white font-medium transition-colors"
+                className="flex items-center gap-2 text-[#050a14] hover:text-[#0052ff] font-medium transition-colors"
               >
                 Loan Products
                 <ChevronRight className={`h-4 w-4 transition-transform ${isDropdownOpen ? 'rotate-90' : ''}`} />
               </button>
               {isDropdownOpen && (
-                <div className="absolute top-full left-0 mt-2 w-72 bg-[#101725] border border-[#1a2332] rounded-2xl shadow-xl py-3 z-50">
+                <div className="absolute top-full left-0 mt-2 w-72 bg-white border border-[#e5e7eb] rounded-2xl shadow-xl py-3 z-50">
                   {loanProducts.map((product) => (
                     <Link
                       key={product.href}
                       href={product.href}
-                      className="block px-6 py-3 text-gray-300 hover:text-white hover:bg-[#1a2332] transition-all"
+                      className="block px-6 py-3 text-[#050a14] hover:text-[#0052ff] hover:bg-[#f9fafb] transition-all"
                       onClick={() => setIsDropdownOpen(false)}
                     >
                       {product.name}
@@ -61,10 +61,10 @@ export default function Header() {
                 </div>
               )}
             </div>
-            <Link href="/about-us" className="text-gray-300 hover:text-white font-medium transition-colors">
+            <Link href="/about-us" className="text-[#050a14] hover:text-[#0052ff] font-medium transition-colors">
               About Us
             </Link>
-            <Link href="/contact-us" className="text-gray-300 hover:text-white font-medium transition-colors">
+            <Link href="/contact-us" className="text-[#050a14] hover:text-[#0052ff] font-medium transition-colors">
               Contact Us
             </Link>
           </nav>
@@ -79,7 +79,7 @@ export default function Header() {
           </div>
 
           <button
-            className="md:hidden text-white"
+            className="md:hidden text-[#050a14]"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />}
@@ -88,11 +88,11 @@ export default function Header() {
       </div>
 
       {isMenuOpen && (
-        <div className="md:hidden bg-[#050a14] border-t border-[#1a2332]">
+        <div className="md:hidden bg-white border-t border-[#e5e7eb]">
           <div className="px-4 py-6 space-y-4">
             <Link
               href="/"
-              className="block text-lg font-medium text-white py-2"
+              className="block text-lg font-medium text-[#050a14] py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               Home
@@ -101,18 +101,18 @@ export default function Header() {
             <div className="space-y-2">
               <button
                 onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
-                className="w-full flex items-center justify-between text-lg font-medium text-white py-2"
+                className="w-full flex items-center justify-between text-lg font-medium text-[#050a14] py-2"
               >
                 <span>Loan Products</span>
                 <ChevronRight className={`h-5 w-5 transition-transform ${isMobileDropdownOpen ? 'rotate-90' : ''}`} />
               </button>
               {isMobileDropdownOpen && (
-                <div className="pl-4 space-y-1 border-l border-[#1a2332]">
+                <div className="pl-4 space-y-1 border-l border-[#e5e7eb]">
                   {loanProducts.map((product) => (
                     <Link
                       key={product.href}
                       href={product.href}
-                      className="block px-4 py-3 text-gray-400 hover:text-white hover:bg-[#101725] rounded-xl"
+                      className="block px-4 py-3 text-[#6b7280] hover:text-[#0052ff] hover:bg-[#f9fafb] rounded-xl"
                       onClick={() => {
                         setIsMenuOpen(false)
                         setIsMobileDropdownOpen(false)
@@ -127,14 +127,14 @@ export default function Header() {
 
             <Link
               href="/about-us"
-              className="block text-lg font-medium text-white py-2"
+              className="block text-lg font-medium text-[#050a14] py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               About Us
             </Link>
             <Link
               href="/contact-us"
-              className="block text-lg font-medium text-white py-2"
+              className="block text-lg font-medium text-[#050a14] py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               Contact Us
