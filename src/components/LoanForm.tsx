@@ -38,70 +38,70 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
   }
 
   return (
-    <div className="glass-effect rounded-3xl p-6 md:p-8 border border-amber-900/30 shadow-xl">
-      <h3 className="text-xl md:text-2xl font-bold gold-text mb-6">Apply Now</h3>
+    <div className="bg-black border border-[#0a0b0d] rounded-[40px] p-6 md:p-8 shadow-lg">
+      <h3 className="text-xl md:text-2xl font-bold text-white mb-6">Apply Now</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Full Name</label>
+            <label className="block text-sm font-medium text-[#5b616e] mb-2">Full Name</label>
             <input
               type="text"
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2.5 rounded-xl bg-black/30 border border-amber-900/40 text-gray-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-[4px] bg-[#0a0b0d] border border-[#0a0b0d] text-white focus:border-[#eef0f3] focus:outline-none transition-all"
               placeholder="Enter your full name"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Mobile Number</label>
+            <label className="block text-sm font-medium text-[#5b616e] mb-2">Mobile Number</label>
             <input
               type="tel"
               name="mobileNumber"
               value={formData.mobileNumber}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2.5 rounded-xl bg-black/30 border border-amber-900/40 text-gray-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-[4px] bg-[#0a0b0d] border border-[#0a0b0d] text-white focus:border-[#eef0f3] focus:outline-none transition-all"
               placeholder="Enter your mobile number"
             />
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+            <label className="block text-sm font-medium text-[#5b616e] mb-2">Email</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2.5 rounded-xl bg-black/30 border border-amber-900/40 text-gray-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-[4px] bg-[#0a0b0d] border border-[#0a0b0d] text-white focus:border-[#eef0f3] focus:outline-none transition-all"
               placeholder="Enter your email"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">City</label>
+            <label className="block text-sm font-medium text-[#5b616e] mb-2">City</label>
             <input
               type="text"
               name="city"
               value={formData.city}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2.5 rounded-xl bg-black/30 border border-amber-900/40 text-gray-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-[4px] bg-[#0a0b0d] border border-[#0a0b0d] text-white focus:border-[#eef0f3] focus:outline-none transition-all"
               placeholder="Enter your city"
             />
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Loan Type</label>
+            <label className="block text-sm font-medium text-[#5b616e] mb-2">Loan Type</label>
             <select
               name="loanType"
               value={formData.loanType}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2.5 rounded-xl bg-black/30 border border-amber-900/40 text-gray-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-[4px] bg-[#0a0b0d] border border-[#0a0b0d] text-white focus:border-[#eef0f3] focus:outline-none transition-all"
             >
               <option value="">Select Loan Type</option>
               <option value="personal">Personal Loan</option>
@@ -116,13 +116,13 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Monthly Income</label>
+            <label className="block text-sm font-medium text-[#5b616e] mb-2">Monthly Income</label>
             <select
               name="monthlyIncome"
               value={formData.monthlyIncome}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2.5 rounded-xl bg-black/30 border border-amber-900/40 text-gray-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-[4px] bg-[#0a0b0d] border border-[#0a0b0d] text-white focus:border-[#eef0f3] focus:outline-none transition-all"
             >
               <option value="">Select Monthly Income</option>
               <option value="0-15000">Below ₹15,000</option>
@@ -135,13 +135,13 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Employment Type</label>
+            <label className="block text-sm font-medium text-[#5b616e] mb-2">Employment Type</label>
             <select
               name="employmentType"
               value={formData.employmentType}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2.5 rounded-xl bg-black/30 border border-amber-900/40 text-gray-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-[4px] bg-[#0a0b0d] border border-[#0a0b0d] text-white focus:border-[#eef0f3] focus:outline-none transition-all"
             >
               <option value="">Select Employment Type</option>
               <option value="salaried">Salaried</option>
@@ -151,21 +151,21 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Loan Amount Required</label>
+            <label className="block text-sm font-medium text-[#5b616e] mb-2">Loan Amount Required</label>
             <input
               type="number"
               name="loanAmount"
               value={formData.loanAmount}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2.5 rounded-xl bg-black/30 border border-amber-900/40 text-gray-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-[4px] bg-[#0a0b0d] border border-[#0a0b0d] text-white focus:border-[#eef0f3] focus:outline-none transition-all"
               placeholder="Enter loan amount"
             />
           </div>
         </div>
         <button
           type="submit"
-          className="w-full gold-gradient text-black py-3.5 rounded-xl font-semibold text-lg hover:shadow-xl hover:shadow-amber-500/40 transition-all"
+          className="w-full bg-[#eef0f3] text-black px-6 py-3.5 rounded-[100000px] font-semibold text-lg hover:bg-gray-200 transition-all"
         >
           Submit Application
         </button>

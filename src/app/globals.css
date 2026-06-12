@@ -1,42 +1,77 @@
 @import "tailwindcss";
 
+/* Coinbase Design Tokens */
 :root {
-  --background: #0a0a0a;
-  --foreground: #f5f5f0;
-  --gold: #d4af37;
-  --gold-light: #f4e5b8;
-  --gold-dark: #8b6914;
+  /* Color Palette */
+  --color-text-primary: #5b616e;
+  --color-text-secondary: #ffffff;
+  --color-surface-base: #000000;
+  --color-border-muted: #0a0b0d;
+  --color-surface-strong: #eef0f3;
+  
+  /* Typography */
+  --font-family-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-size-xs: 14px;
+  --font-size-sm: 14.4px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 36px;
+  --font-size-3xl: 44px;
+  --font-size-4xl: 64px;
+  --font-weight-base: 400;
+  --font-line-height-base: 24px;
+  
+  /* Spacing */
+  --space-1: 8px;
+  --space-2: 10px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  
+  /* Radius */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 40px;
+  --radius-lg: 56px;
+  --radius-xl: 100000px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-gold: var(--gold);
-  --color-gold-light: var(--gold-light);
-  --color-gold-dark: var(--gold-dark);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-surface-base: var(--color-surface-base);
+  --color-border-muted: var(--color-border-muted);
+  --color-surface-strong: var(--color-surface-strong);
+  
+  --font-sans: var(--font-family-primary);
+  
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+}
+
+/* Base styles */
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-surface-base);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-base);
+  line-height: var(--font-line-height-base);
+  margin: 0;
+  padding: 0;
 }
 
-.gold-gradient {
-  background: linear-gradient(135deg, #d4af37 0%, #f4e5b8 50%, #d4af37 100%);
-}
-
-.gold-text {
-  background: linear-gradient(135deg, #d4af37 0%, #f4e5b8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.glass-effect {
-  background: rgba(15, 15, 15, 0.85);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+/* Focus visible for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--color-surface-strong);
+  outline-offset: 2px;
 }
