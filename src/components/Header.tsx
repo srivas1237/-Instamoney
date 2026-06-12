@@ -61,6 +61,9 @@ export default function Header() {
                 </div>
               )}
             </div>
+            <Link href="/emi-calculator" className="text-[#050a14] hover:text-[#0052ff] font-medium transition-colors">
+              EMI Calculator
+            </Link>
             <Link href="/about-us" className="text-[#050a14] hover:text-[#0052ff] font-medium transition-colors">
               About Us
             </Link>
@@ -125,6 +128,13 @@ export default function Header() {
               )}
             </div>
 
+            <Link
+              href="/emi-calculator"
+              className="block text-lg font-medium text-[#050a14] py-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              EMI Calculator
+            </Link>
             <Link
               href="/about-us"
               className="block text-lg font-medium text-[#050a14] py-2"
