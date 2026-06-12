@@ -1,77 +1,56 @@
 @import "tailwindcss";
 
-/* Coinbase Design Tokens */
+/* Coinbase Inspired Dark Theme */
 :root {
-  /* Color Palette */
-  --color-text-primary: #5b616e;
-  --color-text-secondary: #ffffff;
-  --color-surface-base: #000000;
-  --color-border-muted: #0a0b0d;
-  --color-surface-strong: #eef0f3;
-  
-  /* Typography */
-  --font-family-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  --font-size-xs: 14px;
-  --font-size-sm: 14.4px;
-  --font-size-md: 16px;
-  --font-size-lg: 18px;
-  --font-size-xl: 20px;
-  --font-size-2xl: 36px;
-  --font-size-3xl: 44px;
-  --font-size-4xl: 64px;
-  --font-weight-base: 400;
-  --font-line-height-base: 24px;
-  
-  /* Spacing */
-  --space-1: 8px;
-  --space-2: 10px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 24px;
-  --space-6: 32px;
-  
-  /* Radius */
-  --radius-xs: 2px;
-  --radius-sm: 4px;
-  --radius-md: 40px;
-  --radius-lg: 56px;
-  --radius-xl: 100000px;
+  --background: #050a14;
+  --foreground: #ffffff;
+  --coinbase-blue: #0052ff;
+  --coinbase-blue-hover: #003ecf;
+  --border-muted: #1a2332;
+  --surface-secondary: #101725;
+  --text-muted: #9ca3af;
 }
 
 @theme inline {
-  --color-text-primary: var(--color-text-primary);
-  --color-text-secondary: var(--color-text-secondary);
-  --color-surface-base: var(--color-surface-base);
-  --color-border-muted: var(--color-border-muted);
-  --color-surface-strong: var(--color-surface-strong);
-  
-  --font-sans: var(--font-family-primary);
-  
-  --radius-xs: var(--radius-xs);
-  --radius-sm: var(--radius-sm);
-  --radius-md: var(--radius-md);
-  --radius-lg: var(--radius-lg);
-  --radius-xl: var(--radius-xl);
-}
-
-/* Base styles */
-* {
-  box-sizing: border-box;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-coinbase-blue: var(--coinbase-blue);
+  --color-coinbase-blue-hover: var(--coinbase-blue-hover);
+  --color-border-muted: var(--border-muted);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-text-muted: var(--text-muted);
 }
 
 body {
-  background: var(--color-surface-base);
-  color: var(--color-text-secondary);
-  font-family: var(--font-family-primary);
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-base);
-  line-height: var(--font-line-height-base);
-  margin: 0;
-  padding: 0;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.coinbase-btn {
+  background: linear-gradient(135deg, #0052ff 0%, #0080ff 100%);
+  color: white;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+
+.coinbase-btn:hover {
+  background: linear-gradient(135deg, #003ecf 0%, #006bdb 100%);
+  transform: translateY(-1px);
+}
+
+.coinbase-card {
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-muted);
+  border-radius: 16px;
+  transition: all 0.2s ease;
+}
+
+.coinbase-card:hover {
+  border-color: #3b82f6;
 }
 
 /* Focus visible for accessibility */
 *:focus-visible {
-  outline: 2px solid var(--color-surface-strong);
+  outline: 2px solid var(--coinbase-blue);
   outline-offset: 2px;
 }

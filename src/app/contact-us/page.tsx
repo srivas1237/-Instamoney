@@ -13,13 +13,13 @@ export default function ContactUsPage() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="py-20 lg:py-32 bg-black">
+      <section className="py-20 lg:py-32 bg-[#050a14]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
               Contact Us
             </h1>
-            <p className="text-xl text-[#5b616e] max-w-3xl mx-auto">
+            <p className="text-xl text-[#9ca3af] max-w-3xl mx-auto">
               Have questions? We're here to help. Get in touch with us for any queries.
             </p>
           </div>
@@ -29,12 +29,12 @@ export default function ContactUsPage() {
               <h2 className="text-2xl font-bold text-white mb-8">Get in Touch</h2>
               {contactInfo.map((info, idx) => (
                 <div key={idx} className="flex items-start gap-4">
-                  <div className="bg-[#eef0f3] w-12 h-12 rounded-[40px] flex items-center justify-center flex-shrink-0">
-                    <info.icon className="h-6 w-6 text-black" />
+                  <div className="bg-[#0052ff] w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <info.icon className="h-6 w-6 text-white" />
                   </div>
                   <div>
                     <h3 className="text-white font-semibold mb-1">{info.title}</h3>
-                    <p className="text-[#5b616e]">{info.value}</p>
+                    <p className="text-[#9ca3af]">{info.value}</p>
                   </div>
                 </div>
               ))}
