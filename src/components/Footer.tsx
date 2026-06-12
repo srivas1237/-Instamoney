@@ -9,11 +9,13 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <img 
-                src="/instamoney-logo.png" 
-                alt="InstaMoney Logo" 
-                className="h-12 sm:h-14"
-              />
+              <div className="bg-gradient-to-br from-green-500 to-emerald-700 p-2 rounded-2xl shadow-lg">
+                <img 
+                  src="/instamoney-logo.png" 
+                  alt="InstaMoney Logo" 
+                  className="h-14 sm:h-16"
+                />
+              </div>
             </Link>
             <p className="text-[#6b7280] text-sm">
               Fast & Hassle-Free Loans for Every Need
