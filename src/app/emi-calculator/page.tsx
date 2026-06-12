@@ -56,7 +56,7 @@ export default function EMICalculatorPage() {
 
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Calculator Section */}
-            <div className="bg-[#f9fafb] border border-[#e5e7eb] rounded-3xl p-8 md:p-10">
+            <div className="bg-[#f9fafb] border border-[#e5e7eb] rounded-3xl p-6 sm:p-8 md:p-10">
               <div className="space-y-8">
                 {/* Loan Amount */}
                 <div>

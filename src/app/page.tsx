@@ -180,18 +180,18 @@ export default function HomePage() {
                   Check Eligibility
                 </Link>
               </div>
-              <div className="flex items-center gap-10">
+              <div className="flex flex-wrap items-center gap-6 sm:gap-10">
                 <div>
-                  <p className="text-4xl font-bold text-[#050a14]">50K+</p>
-                  <p className="text-[#6b7280]">Happy Customers</p>
+                  <p className="text-3xl sm:text-4xl font-bold text-[#050a14]">50K+</p>
+                  <p className="text-sm sm:text-base text-[#6b7280]">Happy Customers</p>
                 </div>
                 <div>
-                  <p className="text-4xl font-bold text-[#050a14]">₹500Cr+</p>
-                  <p className="text-[#6b7280]">Loans Disbursed</p>
+                  <p className="text-3xl sm:text-4xl font-bold text-[#050a14]">₹500Cr+</p>
+                  <p className="text-sm sm:text-base text-[#6b7280]">Loans Disbursed</p>
                 </div>
                 <div>
-                  <p className="text-4xl font-bold text-[#050a14]">4.9★</p>
-                  <p className="text-[#6b7280]">Customer Rating</p>
+                  <p className="text-3xl sm:text-4xl font-bold text-[#050a14]">4.9★</p>
+                  <p className="text-sm sm:text-base text-[#6b7280]">Customer Rating</p>
                 </div>
               </div>
             </div>
