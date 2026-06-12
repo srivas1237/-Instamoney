@@ -26,12 +26,11 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <Link href="/" className="flex items-center gap-2">
-            <div className="bg-[#0052ff] p-2 rounded-2xl">
-              <Zap className="h-7 w-7 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-[#050a14]">
-              InstaMoney
-            </span>
+            <img 
+              src="/instamoney-logo.png" 
+              alt="InstaMoney Logo" 
+              className="h-14 sm:h-16"
+            />
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
