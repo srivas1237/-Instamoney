@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Zap, ExternalLink } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
 
 export default function Footer() {
   return (
@@ -9,12 +9,11 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="bg-[#0052ff] p-2 rounded-2xl">
-                <Zap className="h-6 w-6 text-white" />
-              </div>
-              <span className="text-xl font-bold text-[#050a14]">
-                InstaMoney
-              </span>
+              <img 
+                src="/instamoney-logo.png" 
+                alt="InstaMoney Logo" 
+                className="h-12 sm:h-14"
+              />
             </Link>
             <p className="text-[#6b7280] text-sm">
               Fast & Hassle-Free Loans for Every Need

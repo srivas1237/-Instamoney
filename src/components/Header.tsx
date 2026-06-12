@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { Menu, X, Zap, ChevronRight } from 'lucide-react'
+import { Menu, X, ChevronRight } from 'lucide-react'
 
 const loanProducts = [
   { name: 'Personal Loan', href: '/personal-loan' },
