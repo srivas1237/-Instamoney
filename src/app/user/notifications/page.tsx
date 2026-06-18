@@ -37,7 +37,7 @@ export default function UserNotificationsPage() {
         userNotifications = [
           {
             id: 1,
-            title: 'Welcome to InstaMoney!',
+            title: 'Welcome to Kashless!',
             message: 'Your account has been created successfully. Start applying for loans!',
             type: 'success',
             read: false,

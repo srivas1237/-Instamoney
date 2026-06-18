@@ -38,9 +38,9 @@ export default function LoginPage() {
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
         <div className="text-center mb-6">
           <img 
-            src="/instamoney-logo.png" 
-            alt="InstaMoney Logo" 
-            className="h-16 mx-auto mb-4"
+            src="/kashless.png" 
+            alt="Kashless Logo" 
+            className="h-20 mx-auto mb-4"
           />
           <h1 className="text-2xl font-bold text-gray-800">Admin Portal</h1>
           <p className="text-gray-500">Sign in to your account</p>

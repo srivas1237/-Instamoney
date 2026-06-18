@@ -4,7 +4,7 @@ import { CheckCircle, FileText, ArrowRight } from 'lucide-react'
 import LoanForm from '@/components/LoanForm'
 
 export const metadata: Metadata = {
-  title: 'Invoice Finance - Working Capital | InstaMoney',
+  title: 'Invoice Finance - Working Capital | Kashless',
   description: 'Unlock working capital against unpaid invoices for registered businesses and GST-registered firms.',
 }
 
@@ -123,3 +123,4 @@ export default function InvoiceFinancePage() {
     </div>
   )
 }
+

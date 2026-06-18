@@ -4,7 +4,7 @@ import { CheckCircle, FileText, ArrowRight } from 'lucide-react'
 import LoanForm from '@/components/LoanForm'
 
 export const metadata: Metadata = {
-  title: 'Two Wheeler Loan - Low Down Payment | InstaMoney',
+  title: 'Two Wheeler Loan - Low Down Payment | Kashless',
   description: 'Finance your motorcycle or scooter with low down payment and quick approval.',
 }
 
@@ -122,3 +122,4 @@ export default function TwoWheelerLoanPage() {
     </div>
   )
 }
+

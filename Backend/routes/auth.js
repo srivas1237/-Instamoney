@@ -145,7 +145,7 @@ router.post('/admin/init', async (req, res) => {
       {
         username: 'superadmin',
         name: 'Super Admin',
-        email: 'superadmin@instamoney.com',
+        email: 'superadmin@kashless.com',
         phone: '9876543210',
         employeeId: 'EMP001',
         band: 'A',
@@ -156,7 +156,7 @@ router.post('/admin/init', async (req, res) => {
       {
         username: 'admin',
         name: 'Admin User',
-        email: 'admin@instamoney.com',
+        email: 'admin@kashless.com',
         phone: '9876543211',
         employeeId: 'EMP002',
         band: 'B',
@@ -167,7 +167,7 @@ router.post('/admin/init', async (req, res) => {
       {
         username: 'agent',
         name: 'Agent User',
-        email: 'agent@instamoney.com',
+        email: 'agent@kashless.com',
         phone: '9876543212',
         employeeId: 'EMP003',
         band: 'C',

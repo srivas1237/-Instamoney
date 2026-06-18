@@ -110,7 +110,7 @@ app.use(hpp({
 // ==================== END SECURITY MIDDLEWARE ====================
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/instamoney')
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/Kashless')
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
@@ -122,7 +122,7 @@ app.use('/api/users', require('./routes/users'));
 
 // Health check endpoint
 app.get('/', (req, res) => {
-  res.json({ message: 'InstaMoney API Server is running!' });
+  res.json({ message: 'Kashless API Server is running!' });
 });
 
 // Global Error Handler
@@ -141,3 +141,4 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
 });
+

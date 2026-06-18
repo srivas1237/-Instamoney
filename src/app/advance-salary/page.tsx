@@ -4,7 +4,7 @@ import { CheckCircle, FileText, ArrowRight } from 'lucide-react'
 import LoanForm from '@/components/LoanForm'
 
 export const metadata: Metadata = {
-  title: 'Advance Salary - Instant Approval | InstaMoney',
+  title: 'Advance Salary - Instant Approval | Kashless',
   description: 'Get salary advance before payday with instant approval and no long-term debt.',
 }
 
@@ -122,3 +122,4 @@ export default function AdvanceSalaryPage() {
     </div>
   )
 }
+

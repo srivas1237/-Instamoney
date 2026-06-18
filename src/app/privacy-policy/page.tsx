@@ -2,8 +2,8 @@ import { Metadata } from 'next'
 import CompliancePage from '@/components/CompliancePage'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy - InstaMoney',
-  description: 'Learn how InstaMoney collects, uses, and protects your personal information.',
+  title: 'Privacy Policy - Kashless',
+  description: 'Learn how Kashless collects, uses, and protects your personal information.',
 }
 
 export default function PrivacyPolicyPage() {
@@ -45,8 +45,9 @@ export default function PrivacyPolicyPage() {
 
       <h2>7. Contact Us</h2>
       <p>
-        If you have any questions about this privacy policy, please contact us at privacy@instamoney.in
+        If you have any questions about this privacy policy, please contact us at privacy@Kashless.in
       </p>
     </CompliancePage>
   )
 }
+

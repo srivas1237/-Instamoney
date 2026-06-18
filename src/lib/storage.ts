@@ -74,10 +74,10 @@ const isMongoObjectId = (value: unknown): value is string => {
 const emitLeadsUpdated = () => {
   if (typeof window === 'undefined') return;
   try {
-    window.dispatchEvent(new Event('insta:leads_updated'));
+    window.dispatchEvent(new Event('kashless:leads_updated'));
   } catch {}
   try {
-    const bc = new BroadcastChannel('instamoney');
+    const bc = new BroadcastChannel('kashless');
     bc.postMessage({ type: 'leads_updated', ts: Date.now() });
     bc.close();
   } catch {}

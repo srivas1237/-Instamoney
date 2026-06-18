@@ -206,7 +206,7 @@ export default function HomePage() {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#050a14] mb-4">Why Choose InstaMoney</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#050a14] mb-4">Why Choose Kashless</h2>
             <p className="text-xl text-[#6b7280]">Experience the difference with our customer-first approach</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -363,3 +363,4 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
     </div>
   )
 }
+

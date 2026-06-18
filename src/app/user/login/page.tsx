@@ -85,9 +85,9 @@ export default function UserLoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl border border-gray-200">
         <div>
-          <div className="mx-auto h-16 w-16">
+          <div className="mx-auto h-20 w-20">
             <Link href="/">
-              <img src="/instamoney-logo.png" alt="InstaMoney" className="h-16 w-auto mx-auto" />
+              <img src="/kashless.png" alt="Kashless" className="h-20 w-auto mx-auto" />
             </Link>
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">

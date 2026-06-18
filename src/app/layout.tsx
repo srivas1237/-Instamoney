@@ -3,8 +3,13 @@ import "./globals.css";
 import LayoutWrapper from "@/components/LayoutWrapper";
 
 export const metadata: Metadata = {
-  title: "InstaMoney - Fast & Hassle-Free Loans for Every Need",
+  title: "Kashless - Fast & Hassle-Free Loans for Every Need",
   description: "Personal Loan, Home Loan, LAP, Payday Loan, Vehicle Loan & Business Financing Solutions.",
+  icons: {
+    icon: "/kashless.png",
+    shortcut: "/kashless.png",
+    apple: "/kashless.png",
+  },
 };
 
 export default function RootLayout({

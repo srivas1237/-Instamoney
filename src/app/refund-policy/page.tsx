@@ -2,8 +2,8 @@ import { Metadata } from 'next'
 import CompliancePage from '@/components/CompliancePage'
 
 export const metadata: Metadata = {
-  title: 'Refund & Cancellation Policy - InstaMoney',
-  description: 'Learn about InstaMoney refund and cancellation policy.',
+  title: 'Refund & Cancellation Policy - Kashless',
+  description: 'Learn about Kashless refund and cancellation policy.',
 }
 
 export default function RefundPolicyPage() {
@@ -33,8 +33,9 @@ export default function RefundPolicyPage() {
 
       <h2>5. Contact for Refunds</h2>
       <p>
-        For any refund-related queries, please contact us at refunds@instamoney.in or call us at +91 123 456 7890.
+        For any refund-related queries, please contact us at refunds@Kashless.in or call us at +91 123 456 7890.
       </p>
     </CompliancePage>
   )
 }
+

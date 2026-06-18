@@ -23,7 +23,7 @@ export default function AboutUsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#050a14] mb-6">
-              About InstaMoney
+              About Kashless
             </h1>
             <p className="text-xl text-[#6b7280] max-w-3xl mx-auto">
               Your trusted partner for all your financial needs. We make borrowing simple, fast, and transparent.
@@ -51,7 +51,7 @@ export default function AboutUsPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-[#050a14] mb-8">Our Story</h2>
           <p className="text-lg text-[#6b7280] mb-6">
-            InstaMoney was founded with a simple mission: to make credit accessible to everyone. We believe that 
+            Kashless was founded with a simple mission: to make credit accessible to everyone. We believe that 
             financial inclusion is the key to empowering individuals and businesses.
           </p>
           <p className="text-lg text-[#6b7280]">
@@ -95,3 +95,4 @@ export default function AboutUsPage() {
     </div>
   )
 }
+

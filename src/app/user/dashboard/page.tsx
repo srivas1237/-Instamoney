@@ -64,7 +64,7 @@ export default function UserDashboardPage() {
           Hello, {currentUser?.name}!
         </h1>
         <p className="text-gray-600 mt-1">
-          Welcome to your InstaMoney dashboard
+          Welcome to your Kashless dashboard
         </p>
       </div>
 

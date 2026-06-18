@@ -4,7 +4,7 @@ import { CheckCircle, FileText, ArrowRight } from 'lucide-react'
 import LoanForm from '@/components/LoanForm'
 
 export const metadata: Metadata = {
-  title: 'Short Term Loan - Quick Funding | InstaMoney',
+  title: 'Short Term Loan - Quick Funding | Kashless',
   description: 'Get immediate financing for short duration needs. Loan from ₹5,000 to ₹5,00,000 for 7-90 days.',
 }
 
@@ -122,3 +122,4 @@ export default function ShortTermLoanPage() {
     </div>
   )
 }
+

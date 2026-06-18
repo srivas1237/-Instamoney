@@ -2,8 +2,8 @@ import { Metadata } from 'next'
 import CompliancePage from '@/components/CompliancePage'
 
 export const metadata: Metadata = {
-  title: 'Cookie Policy - InstaMoney',
-  description: 'Learn how InstaMoney uses cookies and similar technologies.',
+  title: 'Cookie Policy - Kashless',
+  description: 'Learn how Kashless uses cookies and similar technologies.',
 }
 
 export default function CookiePolicyPage() {
@@ -45,3 +45,4 @@ export default function CookiePolicyPage() {
     </CompliancePage>
   )
 }
+

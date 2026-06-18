@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import CompliancePage from '@/components/CompliancePage'
 
 export const metadata: Metadata = {
-  title: 'Grievance Redressal - InstaMoney',
+  title: 'Grievance Redressal - Kashless',
   description: 'Learn how to file a grievance and our redressal process.',
 }
 
@@ -18,7 +18,7 @@ export default function GrievanceRedressalPage() {
       <h2>2. How to File a Grievance</h2>
       <p>You can file a grievance through any of the following channels:</p>
       <ul>
-        <li>Email: grievance@instamoney.in</li>
+        <li>Email: grievance@Kashless.in</li>
         <li>Phone: +91 123 456 7890</li>
         <li>Post: 123 Financial Hub, Mumbai, Maharashtra, India</li>
       </ul>
@@ -42,9 +42,10 @@ export default function GrievanceRedressalPage() {
       <h2>4. Contact Details for Grievance Redressal</h2>
       <p>
         Grievance Officer: Mr. John Doe<br />
-        Email: grievance@instamoney.in<br />
+        Email: grievance@Kashless.in<br />
         Phone: +91 123 456 7890
       </p>
     </CompliancePage>
   )
 }
+

@@ -44,11 +44,11 @@ export default function AdminDashboard() {
     refresh(true)
 
     const onLeadsUpdated = () => refresh(false)
-    window.addEventListener('insta:leads_updated', onLeadsUpdated)
+    window.addEventListener('kashless:leads_updated', onLeadsUpdated)
 
     let bc: BroadcastChannel | null = null
     try {
-      bc = new BroadcastChannel('instamoney')
+      bc = new BroadcastChannel('kashless')
       bc.onmessage = (event) => {
         if (event?.data?.type === 'leads_updated') refresh(false)
       }
@@ -58,7 +58,7 @@ export default function AdminDashboard() {
 
     return () => {
       isMounted = false
-      window.removeEventListener('insta:leads_updated', onLeadsUpdated)
+      window.removeEventListener('kashless:leads_updated', onLeadsUpdated)
       if (bc) bc.close()
       window.clearInterval(intervalId)
     }
@@ -87,7 +87,7 @@ export default function AdminDashboard() {
     <div>
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
-        <p className="text-gray-500">Welcome to InstaMoney Admin</p>
+        <p className="text-gray-500">Welcome to Kashless Admin</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -150,3 +150,4 @@ export default function AdminDashboard() {
     </div>
   )
 }
+

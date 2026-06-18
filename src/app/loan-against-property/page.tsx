@@ -4,7 +4,7 @@ import { CheckCircle, FileText, ArrowRight } from 'lucide-react'
 import LoanForm from '@/components/LoanForm'
 
 export const metadata: Metadata = {
-  title: 'Loan Against Property - LAP | InstaMoney',
+  title: 'Loan Against Property - LAP | Kashless',
   description: 'Mortgage your residential or commercial property for high loan amount at lower interest rates.',
 }
 
@@ -123,3 +123,4 @@ export default function LoanAgainstPropertyPage() {
     </div>
   )
 }
+

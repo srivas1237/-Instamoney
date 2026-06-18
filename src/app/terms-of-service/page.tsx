@@ -2,8 +2,8 @@ import { Metadata } from 'next'
 import CompliancePage from '@/components/CompliancePage'
 
 export const metadata: Metadata = {
-  title: 'Terms of Service - InstaMoney',
-  description: 'Read the terms and conditions for using InstaMoney services.',
+  title: 'Terms of Service - Kashless',
+  description: 'Read the terms and conditions for using Kashless services.',
 }
 
 export default function TermsOfServicePage() {
@@ -33,12 +33,12 @@ export default function TermsOfServicePage() {
 
       <h2>5. Intellectual Property</h2>
       <p>
-        All content on this website is the property of InstaMoney and is protected by intellectual property laws.
+        All content on this website is the property of Kashless and is protected by intellectual property laws.
       </p>
 
       <h2>6. Limitation of Liability</h2>
       <p>
-        InstaMoney shall not be liable for any indirect, incidental, special, or consequential damages arising out of the use of our services.
+        Kashless shall not be liable for any indirect, incidental, special, or consequential damages arising out of the use of our services.
       </p>
 
       <h2>7. Governing Law</h2>
@@ -53,3 +53,4 @@ export default function TermsOfServicePage() {
     </CompliancePage>
   )
 }
+

@@ -66,9 +66,9 @@ export default function Header() {
         <div className="flex justify-between items-center h-20">
           <Link href="/" className="flex items-center gap-2">
             <img 
-              src="/instamoney-logo.png" 
-              alt="InstaMoney Logo" 
-              className="h-16 sm:h-20"
+              src="/kashless.png" 
+              alt="Kashless Logo" 
+              className="h-20 sm:h-24"
             />
           </Link>
 
@@ -332,3 +332,4 @@ export default function Header() {
     </header>
   )
 }
+

@@ -2,8 +2,8 @@ import { Metadata } from 'next'
 import CompliancePage from '@/components/CompliancePage'
 
 export const metadata: Metadata = {
-  title: 'Disclaimer - InstaMoney',
-  description: 'Disclaimer regarding the use of InstaMoney services.',
+  title: 'Disclaimer - Kashless',
+  description: 'Disclaimer regarding the use of Kashless services.',
 }
 
 export default function DisclaimerPage() {
@@ -24,8 +24,8 @@ export default function DisclaimerPage() {
 
       <h2>External Links Disclaimer</h2>
       <p>
-        The website may contain links to external websites that are not provided or maintained by or in any way affiliated with InstaMoney.
-        Please note that InstaMoney does not guarantee the accuracy, relevance, timeliness, or completeness of any information on these
+        The website may contain links to external websites that are not provided or maintained by or in any way affiliated with Kashless.
+        Please note that Kashless does not guarantee the accuracy, relevance, timeliness, or completeness of any information on these
         external websites.
       </p>
 
@@ -37,3 +37,4 @@ export default function DisclaimerPage() {
     </CompliancePage>
   )
 }
+

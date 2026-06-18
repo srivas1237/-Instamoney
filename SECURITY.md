@@ -1,8 +1,8 @@
-# InstaMoney Security Guide
+# Kashless Security Guide
 
 ## Overview
 
-This document outlines all security measures implemented in the InstaMoney application, both on the frontend and backend.
+This document outlines all security measures implemented in the Kashless application, both on the frontend and backend.
 
 ## Backend Security
 
@@ -102,7 +102,7 @@ This document outlines all security measures implemented in the InstaMoney appli
 ### Backend (.env)
 ```env
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/instamoney
+MONGODB_URI=mongodb://localhost:27017/Kashless
 JWT_SECRET=your_very_secure_random_secret_key_here
 NODE_ENV=development
 ```
@@ -210,3 +210,4 @@ If you discover a security vulnerability:
 ---
 **Last Updated**: June 2024
 **Version**: 1.0
+

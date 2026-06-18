@@ -1,6 +1,6 @@
-# InstaMoney Backend
+# Kashless Backend
 
-A Node.js + Express + MongoDB backend for the InstaMoney loan marketplace application.
+A Node.js + Express + MongoDB backend for the Kashless loan marketplace application.
 
 ## Tech Stack
 
@@ -57,7 +57,7 @@ Backend/
    Create a `.env` file in the Backend directory (already created):
    ```
    PORT=5000
-   MONGODB_URI=mongodb://localhost:27017/instamoney
+   MONGODB_URI=mongodb://localhost:27017/Kashless
    JWT_SECRET=your-secret-key-change-this-in-production
    NODE_ENV=development
    ```
@@ -170,7 +170,7 @@ Authorization: Bearer <your-token-here>
     "id": "60d21b4667d0d8992e610c85",
     "username": "superadmin",
     "name": "Super Admin",
-    "email": "superadmin@instamoney.com",
+    "email": "superadmin@Kashless.com",
     "phone": "9876543210",
     "employeeId": "EMP001",
     "band": "A",
@@ -385,7 +385,7 @@ Authorization: Bearer <your-token-here>
     "assignedTo": {
       "_id": "60d21b4667d0d8992e610c87",
       "name": "Agent User",
-      "email": "agent@instamoney.com"
+      "email": "agent@Kashless.com"
     },
     "assignedBy": {
       "_id": "60d21b4667d0d8992e610c85",
@@ -504,7 +504,7 @@ Authorization: Bearer <your-token-here>
     "_id": "60d21b4667d0d8992e610c85",
     "username": "superadmin",
     "name": "Super Admin",
-    "email": "superadmin@instamoney.com",
+    "email": "superadmin@Kashless.com",
     "phone": "9876543210",
     "employeeId": "EMP001",
     "band": "A",
@@ -527,7 +527,7 @@ Authorization: Bearer <your-token-here>
 {
   "username": "newagent",
   "name": "New Agent",
-  "email": "newagent@instamoney.com",
+  "email": "newagent@Kashless.com",
   "phone": "9876543211",
   "employeeId": "EMP004",
   "band": "C",
@@ -543,7 +543,7 @@ Authorization: Bearer <your-token-here>
   "_id": "60d21b4667d0d8992e610c89",
   "username": "newagent",
   "name": "New Agent",
-  "email": "newagent@instamoney.com",
+  "email": "newagent@Kashless.com",
   "phone": "9876543211",
   "employeeId": "EMP004",
   "band": "C",
@@ -615,7 +615,7 @@ Authorization: Bearer <your-token-here>
   "_id": "60d21b4667d0d8992e610c85",
   "username": "superadmin",
   "name": "Super Admin",
-  "email": "superadmin@instamoney.com",
+  "email": "superadmin@Kashless.com",
   "phone": "9876543210",
   "employeeId": "EMP001",
   "band": "A",
@@ -796,7 +796,7 @@ After initialization, these default admin users are available:
 
 3. **Create an environment:**
    ```bash
-   eb create instamoney-backend
+   eb create Kashless-backend
    ```
 
 4. **Set environment variables in AWS Console:**
@@ -818,7 +818,7 @@ After initialization, these default admin users are available:
 6. **Use PM2 for process management:**
    ```bash
    npm install -g pm2
-   pm2 start server.js --name instamoney-backend
+   pm2 start server.js --name Kashless-backend
    pm2 startup
    pm2 save
    ```
@@ -865,3 +865,4 @@ For production, replace with your AWS backend URL.
 ## License
 
 MIT
+

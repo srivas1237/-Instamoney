@@ -4,7 +4,7 @@ import { CheckCircle, FileText, ArrowRight } from 'lucide-react'
 import LoanForm from '@/components/LoanForm'
 
 export const metadata: Metadata = {
-  title: 'Car Loan - 100% Funding | InstaMoney',
+  title: 'Car Loan - 100% Funding | Kashless',
   description: 'Finance for new and used cars with up to 100% funding and flexible EMI options.',
 }
 
@@ -123,3 +123,4 @@ export default function CarLoanPage() {
     </div>
   )
 }
+

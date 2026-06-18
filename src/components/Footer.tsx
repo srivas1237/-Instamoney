@@ -10,9 +10,9 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
               <img 
-                src="/instamoney-logo.png" 
-                alt="InstaMoney Logo" 
-                className="h-14 sm:h-16"
+                src="/kashless.png" 
+                alt="Kashless Logo" 
+                className="h-16 sm:h-20"
               />
             </Link>
             <p className="text-[#6b7280] text-sm">
@@ -57,7 +57,7 @@ export default function Footer() {
         {/* Bottom Section */}
         <div className="mt-12 pt-8 border-t border-[#e5e7eb] flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-[#6b7280] text-sm">
-            © 2024 InstaMoney. All rights reserved.
+            © 2024 Kashless. All rights reserved.
           </p>
           <div className="flex gap-4">
             <a href="#" className="text-[#6b7280] hover:text-[#0052ff] transition-colors">

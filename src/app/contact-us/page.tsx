@@ -4,7 +4,7 @@ import LoanForm from '@/components/LoanForm'
 
 const contactInfo = [
   { icon: Phone, title: 'Phone', value: '+91 123 456 7890' },
-  { icon: Mail, title: 'Email', value: 'support@instamoney.com' },
+  { icon: Mail, title: 'Email', value: 'support@kashless.com' },
   { icon: MapPin, title: 'Address', value: '123 Finance Street, Mumbai, India' },
   { icon: Clock, title: 'Working Hours', value: 'Mon-Sat: 9AM - 7PM' },
 ]
