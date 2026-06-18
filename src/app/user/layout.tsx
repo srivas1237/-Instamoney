@@ -68,7 +68,10 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex items-center justify-end p-4">
+        <div className="flex items-center justify-between p-4">
+          <Link href="/" className="flex items-center gap-2">
+            <img src="/instamoney-logo.png" alt="InstaMoney" className="h-10" />
+          </Link>
           <button
             className="md:hidden text-gray-500 hover:text-gray-700"
             onClick={() => setIsSidebarOpen(false)}
