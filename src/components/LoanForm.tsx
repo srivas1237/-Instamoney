@@ -20,6 +20,18 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Save lead to localStorage
+    const newLead = {
+      id: Date.now(),
+      ...formData,
+      status: 'new',
+      createdAt: new Date().toISOString()
+    }
+    
+    const existingLeads = JSON.parse(localStorage.getItem('loan_leads') || '[]')
+    localStorage.setItem('loan_leads', JSON.stringify([newLead, ...existingLeads]))
+    
     alert('Thank you for your application! We will contact you soon.')
     setFormData({
       fullName: '',
