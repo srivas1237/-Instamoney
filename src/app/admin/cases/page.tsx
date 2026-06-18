@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { Plus, FileText, User, Calendar, ArrowRight } from 'lucide-react'
-import { getCases, setCases, getAdminUsers, Case, AdminUser, getCurrentAdminUser } from '@/lib/storage'
+import { getCases, setCases, getAdminUsers, InstaCase, InstaAdminUser, getCurrentAdminUser } from '@/lib/storage'
 
 export default function CasesPage() {
-  const [cases, setCasesState] = useState<Case[]>([])
-  const [users, setUsers] = useState<AdminUser[]>([])
+  const [cases, setCasesState] = useState<InstaCase[]>([])
+  const [users, setUsers] = useState<InstaAdminUser[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [currentUser, setCurrentUser] = useState<AdminUser | null>(null)
-  const [formData, setFormData] = useState<Partial<Case>>({
+  const [currentUser, setCurrentUser] = useState<InstaAdminUser | null>(null)
+  const [formData, setFormData] = useState<Partial<InstaCase>>({
     title: '',
     description: '',
     type: 'case',
@@ -27,7 +27,7 @@ export default function CasesPage() {
     e.preventDefault()
     if (!currentUser) return
     
-    const newCase: Case = {
+    const newCase: InstaCase = {
       id: Date.now().toString(),
       title: formData.title!,
       description: formData.description!,

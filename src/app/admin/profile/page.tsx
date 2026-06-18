@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { User, Mail, Phone, IdCard, Award } from 'lucide-react'
-import { getCurrentAdminUser, getAdminUsers, setAdminUsers, setCurrentAdminUser, AdminUser } from '@/lib/storage'
+import { getCurrentAdminUser, getAdminUsers, setAdminUsers, setCurrentAdminUser, InstaAdminUser } from '@/lib/storage'
 
 export default function AdminProfilePage() {
-  const [user, setUser] = useState<AdminUser | null>(null)
+  const [user, setUser] = useState<InstaAdminUser | null>(null)
   const [isEditing, setIsEditing] = useState(false)
-  const [formData, setFormData] = useState<Partial<AdminUser>>({})
+  const [formData, setFormData] = useState<Partial<InstaAdminUser>>({})
 
   useEffect(() => {
     const currentUser = getCurrentAdminUser()
@@ -24,9 +24,9 @@ export default function AdminProfilePage() {
   const handleSave = () => {
     if (!user) return
     const users = getAdminUsers()
-    const updatedUsers = users.map(u => u.id === user.id ? { ...u, ...formData } as AdminUser : u)
+    const updatedUsers = users.map(u => u.id === user.id ? { ...u, ...formData } as InstaAdminUser : u)
     setAdminUsers(updatedUsers)
-    const updatedUser = updatedUsers.find(u => u.id === user.id) as AdminUser
+    const updatedUser = updatedUsers.find(u => u.id === user.id) as InstaAdminUser
     setUser(updatedUser)
     setCurrentAdminUser(updatedUser)
     setIsEditing(false)

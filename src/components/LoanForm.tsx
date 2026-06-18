@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { getCurrentUser, getLeads, setLeads, User } from '@/lib/storage'
+import { getCurrentUser, getLeads, setLeads, InstaUser, InstaLead } from '@/lib/storage'
 
 interface LoanFormProps {
   defaultLoanType?: string
@@ -58,7 +58,7 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
     employmentType: '',
     loanAmount: '',
   })
-  const [currentUser, setCurrentUserState] = useState<User | null>(null)
+  const [currentUser, setCurrentUserState] = useState<InstaUser | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -91,7 +91,7 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
     localStorage.setItem('loan_leads', JSON.stringify([newApplication, ...existingLeads]))
     
     // Also save to our new leads storage
-    const newLead = {
+    const newLead: InstaLead = {
       id: newApplication.id.toString(),
       name: newApplication.fullName,
       phone: newApplication.mobileNumber,

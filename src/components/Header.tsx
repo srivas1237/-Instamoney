@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { Menu, X, ChevronRight, User } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
-import { getCurrentUser, setCurrentUser, getCurrentAdminUser, setCurrentAdminUser, User, AdminUser } from '@/lib/storage'
+import { getCurrentUser, setCurrentUser, getCurrentAdminUser, setCurrentAdminUser, InstaUser, InstaAdminUser } from '@/lib/storage'
 
 const loanProducts = [
   { name: 'Personal Loan', href: '/personal-loan' },
@@ -24,8 +24,8 @@ export default function Header() {
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
   const [isAdminDropdownOpen, setIsAdminDropdownOpen] = useState(false)
-  const [currentUser, setCurrentUserState] = useState<User | null>(null)
-  const [adminUser, setAdminUserState] = useState<AdminUser | null>(null)
+  const [currentUser, setCurrentUserState] = useState<InstaUser | null>(null)
+  const [adminUser, setAdminUserState] = useState<InstaAdminUser | null>(null)
   const pathname = usePathname()
   const router = useRouter()
   

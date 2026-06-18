@@ -1,4 +1,4 @@
-export interface User {
+export interface InstaUser {
   id: string;
   name: string;
   email: string;
@@ -9,7 +9,7 @@ export interface User {
   address?: string;
 }
 
-export interface AdminUser {
+export interface InstaAdminUser {
   id: string;
   username: string;
   name: string;
@@ -21,7 +21,7 @@ export interface AdminUser {
   password: string;
 }
 
-export interface Lead {
+export interface InstaLead {
   id: string;
   name: string;
   phone: string;
@@ -35,7 +35,7 @@ export interface Lead {
   userId?: string;
 }
 
-export interface Case {
+export interface InstaCase {
   id: string;
   title: string;
   description: string;
@@ -48,20 +48,20 @@ export interface Case {
   updatedAt: string;
 }
 
-export const getUsers = (): User[] => {
+export const getUsers = (): InstaUser[] => {
   return JSON.parse(localStorage.getItem('insta_users') || '[]');
 };
 
-export const setUsers = (users: User[]) => {
+export const setUsers = (users: InstaUser[]) => {
   localStorage.setItem('insta_users', JSON.stringify(users));
 };
 
-export const getCurrentUser = (): User | null => {
+export const getCurrentUser = (): InstaUser | null => {
   const user = localStorage.getItem('insta_user');
   return user ? JSON.parse(user) : null;
 };
 
-export const setCurrentUser = (user: User | null) => {
+export const setCurrentUser = (user: InstaUser | null) => {
   if (user) {
     localStorage.setItem('insta_user', JSON.stringify(user));
   } else {
@@ -69,10 +69,10 @@ export const setCurrentUser = (user: User | null) => {
   }
 };
 
-export const getAdminUsers = (): AdminUser[] => {
+export const getAdminUsers = (): InstaAdminUser[] => {
   const users = JSON.parse(localStorage.getItem('admin_users') || '[]');
   if (users.length === 0) {
-    const defaultUsers: AdminUser[] = [
+    const defaultUsers: InstaAdminUser[] = [
       {
         id: '1',
         username: 'superadmin',
@@ -113,16 +113,16 @@ export const getAdminUsers = (): AdminUser[] => {
   return users;
 };
 
-export const setAdminUsers = (users: AdminUser[]) => {
+export const setAdminUsers = (users: InstaAdminUser[]) => {
   localStorage.setItem('admin_users', JSON.stringify(users));
 };
 
-export const getCurrentAdminUser = (): AdminUser | null => {
+export const getCurrentAdminUser = (): InstaAdminUser | null => {
   const user = localStorage.getItem('admin_user');
   return user ? JSON.parse(user) : null;
 };
 
-export const setCurrentAdminUser = (user: AdminUser | null) => {
+export const setCurrentAdminUser = (user: InstaAdminUser | null) => {
   if (user) {
     localStorage.setItem('admin_user', JSON.stringify(user));
   } else {
@@ -130,18 +130,18 @@ export const setCurrentAdminUser = (user: AdminUser | null) => {
   }
 };
 
-export const getLeads = (): Lead[] => {
+export const getLeads = (): InstaLead[] => {
   return JSON.parse(localStorage.getItem('insta_leads') || '[]');
 };
 
-export const setLeads = (leads: Lead[]) => {
+export const setLeads = (leads: InstaLead[]) => {
   localStorage.setItem('insta_leads', JSON.stringify(leads));
 };
 
-export const getCases = (): Case[] => {
+export const getCases = (): InstaCase[] => {
   return JSON.parse(localStorage.getItem('insta_cases') || '[]');
 };
 
-export const setCases = (cases: Case[]) => {
+export const setCases = (cases: InstaCase[]) => {
   localStorage.setItem('insta_cases', JSON.stringify(cases));
 };

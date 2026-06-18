@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Plus, User, Phone, Mail, DollarSign, ArrowRight, Trash2 } from 'lucide-react'
-import { getLeads, setLeads, getCurrentAdminUser, Lead, AdminUser } from '@/lib/storage'
+import { getLeads, setLeads, getCurrentAdminUser, InstaLead, InstaAdminUser } from '@/lib/storage'
 
 // For backward compatibility
 const migrateLeads = () => {
@@ -19,16 +19,16 @@ const migrateLeads = () => {
       status: l.status,
       createdAt: l.createdAt,
       userId: l.userId,
-    } as Lead))
+    } as InstaLead))
     setLeads(migrated)
   }
 }
 
 export default function LeadsPage() {
-  const [leads, setLeadsState] = useState<Lead[]>([])
+  const [leads, setLeadsState] = useState<InstaLead[]>([])
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [user, setUser] = useState<AdminUser | null>(null)
+  const [user, setUser] = useState<InstaAdminUser | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -64,7 +64,7 @@ export default function LeadsPage() {
   const canEdit = hasPermission('edit_leads')
   const canDelete = user?.role === 'super_admin'
 
-  const updateLeadStatus = (id: string, newStatus: Lead['status']) => {
+  const updateLeadStatus = (id: string, newStatus: InstaLead['status']) => {
     const updatedLeads = leads.map(lead => 
       lead.id === id ? { ...lead, status: newStatus } : lead
     )
@@ -82,7 +82,7 @@ export default function LeadsPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const newLead: Lead = {
+    const newLead: InstaLead = {
       id: Date.now().toString(),
       name: formData.name,
       phone: formData.phone,

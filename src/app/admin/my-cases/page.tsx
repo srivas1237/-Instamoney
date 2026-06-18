@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { FileText, User, Calendar, Check, ArrowRight } from 'lucide-react'
-import { getCases, setCases, getCurrentAdminUser, getAdminUsers, Case, AdminUser } from '@/lib/storage'
+import { getCases, setCases, getCurrentAdminUser, getAdminUsers, InstaCase, InstaAdminUser } from '@/lib/storage'
 
 export default function MyCasesPage() {
-  const [cases, setCasesState] = useState<Case[]>([])
-  const [currentUser, setCurrentUser] = useState<AdminUser | null>(null)
-  const [selectedCase, setSelectedCase] = useState<Case | null>(null)
+  const [cases, setCasesState] = useState<InstaCase[]>([])
+  const [currentUser, setCurrentUser] = useState<InstaAdminUser | null>(null)
+  const [selectedCase, setSelectedCase] = useState<InstaCase | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [resolution, setResolution] = useState('')
 
@@ -19,7 +19,7 @@ export default function MyCasesPage() {
     }
   }, [])
 
-  const handleUpdateStatus = (caseId: string, status: Case['status']) => {
+  const handleUpdateStatus = (caseId: string, status: InstaCase['status']) => {
     const updatedCases = getCases().map(c => 
       c.id === caseId ? { ...c, status, updatedAt: new Date().toISOString() } : c
     )

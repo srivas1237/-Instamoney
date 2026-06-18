@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Home, BarChart3, Users, Settings, LogOut, Shield, Menu, X, FileText, UserPlus } from 'lucide-react'
-import { getCurrentAdminUser, setCurrentAdminUser, getAdminUsers, AdminUser } from '@/lib/storage'
+import { getCurrentAdminUser, setCurrentAdminUser, getAdminUsers, InstaAdminUser } from '@/lib/storage'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AdminUser | null>(null)
+  const [user, setUser] = useState<InstaAdminUser | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
