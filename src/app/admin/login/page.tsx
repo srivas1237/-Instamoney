@@ -37,11 +37,13 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
         <div className="text-center mb-6">
-          <img 
-            src="/kashless.png" 
-            alt="Kashless Logo" 
-            className="h-20 mx-auto mb-4"
-          />
+          <div className="mb-4 flex justify-center">
+            <img 
+              src="/kashless.png" 
+              alt="Kashless Logo" 
+              className="block h-20 sm:h-24 w-auto object-contain"
+            />
+          </div>
           <h1 className="text-2xl font-bold text-gray-800">Admin Portal</h1>
           <p className="text-gray-500">Sign in to your account</p>
         </div>
