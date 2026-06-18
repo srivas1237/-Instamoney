@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { USERS, User } from '../layout'
+import { getAdminUsers, InstaAdminUser } from '@/lib/storage'
 
 export default function LoginPage() {
   const [username, setUsername] = useState('')
@@ -13,10 +13,11 @@ export default function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    const user = USERS.find(u => u.username === username)
+    const adminUsers = getAdminUsers()
+    const user = adminUsers.find(u => u.username === username)
     
-    // Simple password check for demo (password same as username)
-    if (user && password === username) {
+    // Check password (matches demo credentials)
+    if (user && password === user.password) {
       localStorage.setItem('admin_user', JSON.stringify(user))
       router.push('/admin')
     } else {
