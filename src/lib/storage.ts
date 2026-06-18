@@ -18,6 +18,7 @@ export interface InstaAdminUser {
   employeeId: string;
   band: 'A' | 'B' | 'C' | 'D';
   role: 'super_admin' | 'admin' | 'agent';
+  permissions: string[];
   password: string;
 }
 
@@ -46,6 +47,12 @@ export interface InstaCase {
   resolution?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export const ROLE_PERMISSIONS: Record<string, string[]> = {
+  super_admin: ['view_leads', 'edit_leads', 'delete_leads', 'manage_users', 'view_reports'],
+  admin: ['view_leads', 'edit_leads', 'view_reports'],
+  agent: ['view_leads', 'edit_leads'],
 }
 
 export const getUsers = (): InstaUser[] => {
@@ -82,6 +89,7 @@ export const getAdminUsers = (): InstaAdminUser[] => {
         employeeId: 'EMP001',
         band: 'A',
         role: 'super_admin',
+        permissions: ROLE_PERMISSIONS.super_admin,
         password: 'superadmin',
       },
       {
@@ -93,6 +101,7 @@ export const getAdminUsers = (): InstaAdminUser[] => {
         employeeId: 'EMP002',
         band: 'B',
         role: 'admin',
+        permissions: ROLE_PERMISSIONS.admin,
         password: 'admin',
       },
       {
@@ -104,13 +113,19 @@ export const getAdminUsers = (): InstaAdminUser[] => {
         employeeId: 'EMP003',
         band: 'C',
         role: 'agent',
+        permissions: ROLE_PERMISSIONS.agent,
         password: 'agent',
       },
     ];
     setAdminUsers(defaultUsers);
     return defaultUsers;
   }
-  return users;
+  // Add permissions to existing users if missing (backward compatibility)
+  const usersWithPermissions: InstaAdminUser[] = users.map((u: any) => ({
+    ...u,
+    permissions: u.permissions || ROLE_PERMISSIONS[u.role] || [],
+  }));
+  return usersWithPermissions;
 };
 
 export const setAdminUsers = (users: InstaAdminUser[]) => {

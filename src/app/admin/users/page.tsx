@@ -2,16 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import { Plus, Edit, Trash2, X } from 'lucide-react'
-import { getAdminUsers, setAdminUsers, getCurrentAdminUser, InstaAdminUser } from '@/lib/storage'
+import { getAdminUsers, setAdminUsers, getCurrentAdminUser, InstaAdminUser, ROLE_PERMISSIONS } from '@/lib/storage'
 
-// Role permissions configuration
-const ROLE_PERMISSIONS: Record<string, string[]> = {
-  super_admin: ['view_leads', 'edit_leads', 'delete_leads', 'manage_users', 'view_reports'],
-  admin: ['view_leads', 'edit_leads', 'view_reports'],
-  agent: ['view_leads', 'edit_leads'],
-}
+type AddEditUserFormData = Omit<InstaAdminUser, 'id'>
 
-type AddEditUserFormData = Omit<InstaAdminUser, 'id' | 'createdAt'>
+const ALL_PERMISSIONS = ['view_leads', 'edit_leads', 'delete_leads', 'manage_users', 'view_reports']
 
 export default function UsersPage() {
   const [users, setUsers] = useState<InstaAdminUser[]>([])
@@ -27,6 +22,7 @@ export default function UsersPage() {
     employeeId: '',
     band: 'A',
     role: 'agent',
+    permissions: ROLE_PERMISSIONS.agent,
     password: '',
   })
   const [editFormData, setEditFormData] = useState<Partial<AddEditUserFormData>>({})
@@ -40,7 +36,7 @@ export default function UsersPage() {
   }, [])
 
   // Check if user has permission to manage users
-  if (!user || user.role !== 'super_admin') {
+  if (!user || !user.permissions.includes('manage_users')) {
     return (
       <div className="text-center py-12">
         <h2 className="text-xl font-bold text-gray-800">Access Denied</h2>
@@ -67,6 +63,7 @@ export default function UsersPage() {
       employeeId: '',
       band: 'A',
       role: 'agent',
+      permissions: ROLE_PERMISSIONS.agent,
       password: '',
     })
   }
@@ -142,7 +139,7 @@ export default function UsersPage() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-wrap gap-1">
-                      {ROLE_PERMISSIONS[u.role].map(perm => (
+                      {u.permissions.map(perm => (
                         <span key={perm} className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">
                           {perm.replace('_', ' ')}
                         </span>
@@ -177,7 +174,7 @@ export default function UsersPage() {
       {/* Add User Modal */}
       {isAddModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-semibold text-gray-900">Add New User</h3>
@@ -269,7 +266,14 @@ export default function UsersPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
                     <select
                       value={addFormData.role}
-                      onChange={(e) => setAddFormData({ ...addFormData, role: e.target.value as any })}
+                      onChange={(e) => {
+                        const role = e.target.value as any
+                        setAddFormData({
+                          ...addFormData,
+                          role,
+                          permissions: ROLE_PERMISSIONS[role]
+                        })
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
                     >
                       <option value="agent">Agent</option>
@@ -287,6 +291,28 @@ export default function UsersPage() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
                       placeholder="Enter password"
                     />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Permissions</label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {ALL_PERMISSIONS.map(perm => (
+                      <label key={perm} className="flex items-center gap-2 text-sm text-gray-700">
+                        <input
+                          type="checkbox"
+                          checked={addFormData.permissions.includes(perm)}
+                          onChange={(e) => {
+                            const isChecked = e.target.checked
+                            const newPermissions = isChecked
+                              ? [...addFormData.permissions, perm]
+                              : addFormData.permissions.filter(p => p !== perm)
+                            setAddFormData({ ...addFormData, permissions: newPermissions })
+                          }}
+                          className="rounded border-gray-300 text-[#0052ff] focus:ring-[#0052ff]"
+                        />
+                        {perm.replace('_', ' ')}
+                      </label>
+                    ))}
                   </div>
                 </div>
                 <div className="flex gap-3 pt-4">
@@ -313,7 +339,7 @@ export default function UsersPage() {
       {/* Edit User Modal */}
       {isEditModalOpen && editingUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-semibold text-gray-900">Edit User</h3>
@@ -405,7 +431,14 @@ export default function UsersPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
                     <select
                       value={editFormData.role || 'agent'}
-                      onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value as any })}
+                      onChange={(e) => {
+                        const role = e.target.value as any
+                        setEditFormData({
+                          ...editFormData,
+                          role,
+                          permissions: ROLE_PERMISSIONS[role]
+                        })
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
                     >
                       <option value="agent">Agent</option>
@@ -422,6 +455,29 @@ export default function UsersPage() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
                       placeholder="Enter new password"
                     />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Permissions</label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {ALL_PERMISSIONS.map(perm => (
+                      <label key={perm} className="flex items-center gap-2 text-sm text-gray-700">
+                        <input
+                          type="checkbox"
+                          checked={editFormData.permissions?.includes(perm) || false}
+                          onChange={(e) => {
+                            const isChecked = e.target.checked
+                            const currentPermissions = editFormData.permissions || []
+                            const newPermissions = isChecked
+                              ? [...currentPermissions, perm]
+                              : currentPermissions.filter(p => p !== perm)
+                            setEditFormData({ ...editFormData, permissions: newPermissions })
+                          }}
+                          className="rounded border-gray-300 text-[#0052ff] focus:ring-[#0052ff]"
+                        />
+                        {perm.replace('_', ' ')}
+                      </label>
+                    ))}
                   </div>
                 </div>
                 <div className="flex gap-3 pt-4">

@@ -46,7 +46,7 @@ export default function AdminProfilePage() {
             </div>
             <div>
               <h2 className="text-xl font-semibold text-gray-900">{user.name}</h2>
-              <p className="text-gray-600">{user.role.replace('_', ' ').toUpperCase()}</p>
+              <p className="text-gray-500">{user.role.replace('_', ' ').toUpperCase()}</p>
             </div>
             <button
               onClick={() => setIsEditing(!isEditing)}
@@ -157,6 +157,17 @@ export default function AdminProfilePage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
                 <p className="text-gray-900">{user.username}</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Permissions</label>
+                <div className="flex flex-wrap gap-1">
+                  {user.permissions.map(perm => (
+                    <span key={perm} className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">
+                      {perm.replace('_', ' ')}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

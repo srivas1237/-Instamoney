@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Home, BarChart3, Users, Settings, LogOut, Shield, Menu, X, FileText, UserPlus } from 'lucide-react'
-import { getCurrentAdminUser, setCurrentAdminUser, getAdminUsers, InstaAdminUser } from '@/lib/storage'
+import { getCurrentAdminUser, setCurrentAdminUser, InstaAdminUser } from '@/lib/storage'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<InstaAdminUser | null>(null)
@@ -27,18 +27,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     setCurrentAdminUser(null)
     setUser(null)
     router.push('/admin/login')
-  }
-
-  const hasPermission = (permission: string) => {
-    if (!user) return false
-    if (user.role === 'super_admin') return true
-    if (user.role === 'admin') {
-      return ['view_leads', 'edit_leads', 'view_reports'].includes(permission)
-    }
-    if (user.role === 'agent') {
-      return ['view_leads', 'edit_leads'].includes(permission)
-    }
-    return false
   }
 
   if (!user && pathname !== '/admin/login') {
@@ -86,7 +74,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             Dashboard
           </Link>
 
-          {hasPermission('view_leads') && (
+          {user?.permissions.includes('view_leads') && (
             <Link
               href="/admin/leads"
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
@@ -101,7 +89,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </Link>
           )}
 
-          {(user.role === 'super_admin' || user.role === 'admin') && (
+          {(user?.role === 'super_admin' || user?.role === 'admin') && (
             <Link
               href="/admin/cases"
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
@@ -116,7 +104,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </Link>
           )}
 
-          {(user.role === 'agent') && (
+          {user?.role === 'agent' && (
             <Link
               href="/admin/my-cases"
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
@@ -131,7 +119,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </Link>
           )}
 
-          {hasPermission('view_reports') && (
+          {user?.permissions.includes('view_reports') && (
             <Link
               href="/admin/reports"
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
@@ -146,7 +134,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </Link>
           )}
 
-          {user.role === 'super_admin' && (
+          {user?.permissions.includes('manage_users') && (
             <Link
               href="/admin/users"
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
@@ -185,7 +173,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 {user?.name}
               </p>
               <p className="text-xs text-gray-500 truncate">
-                {user?.role}
+                {user?.role.replace('_', ' ')}
               </p>
             </div>
           </div>
