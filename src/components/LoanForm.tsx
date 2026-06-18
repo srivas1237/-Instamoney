@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { getCurrentUser, getLeads, setLeads, User } from '@/lib/storage'
 
 interface LoanFormProps {
   defaultLoanType?: string
@@ -57,12 +58,12 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
     employmentType: '',
     loanAmount: '',
   })
-  const [currentUser, setCurrentUser] = useState<any>(null)
+  const [currentUser, setCurrentUserState] = useState<User | null>(null)
   const router = useRouter()
 
   useEffect(() => {
-    const user = localStorage.getItem('insta_user')
-    if (user) setCurrentUser(JSON.parse(user))
+    const user = getCurrentUser()
+    if (user) setCurrentUserState(user)
   }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -88,6 +89,21 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
     // Save to both loan_leads and user's applications
     const existingLeads = JSON.parse(localStorage.getItem('loan_leads') || '[]')
     localStorage.setItem('loan_leads', JSON.stringify([newApplication, ...existingLeads]))
+    
+    // Also save to our new leads storage
+    const newLead = {
+      id: newApplication.id.toString(),
+      name: newApplication.fullName,
+      phone: newApplication.mobileNumber,
+      email: newApplication.email,
+      loanType: newApplication.loanType,
+      amount: newApplication.loanAmount,
+      status: newApplication.status,
+      createdAt: newApplication.createdAt,
+      userId: newApplication.userId,
+    }
+    const existingNewLeads = getLeads()
+    setLeads([newLead, ...existingNewLeads])
     
     const userApplications = JSON.parse(localStorage.getItem(`user_${currentUser.id}_applications`) || '[]')
     localStorage.setItem(`user_${currentUser.id}_applications`, JSON.stringify([newApplication, ...userApplications]))
@@ -188,13 +204,13 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
               className="w-full px-4 py-3 rounded-xl bg-white border border-[#e5e7eb] text-[#050a14] focus:border-[#0052ff] focus:outline-none transition-all"
             >
               <option value="">Select Loan Type</option>
-              <option value="personal">Personal Loan</option>
-              <option value="home">Home Loan</option>
-              <option value="lap">Loan Against Property</option>
-              <option value="short-term">Short Term Loan</option>
-              <option value="payday">Payday Loan</option>
-              <option value="car">Car Loan</option>
-              <option value="two-wheeler">Two Wheeler Loan</option>
+              <option value="personal-loan">Personal Loan</option>
+              <option value="home-loan">Home Loan</option>
+              <option value="loan-against-property">Loan Against Property</option>
+              <option value="short-term-loan">Short Term Loan</option>
+              <option value="payday-loan">Payday Loan</option>
+              <option value="car-loan">Car Loan</option>
+              <option value="two-wheeler-loan">Two Wheeler Loan</option>
               <option value="advance-salary">Advance Salary</option>
               <option value="invoice-finance">Invoice Finance</option>
             </select>

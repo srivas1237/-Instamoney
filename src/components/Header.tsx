@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { Menu, X, ChevronRight, User } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
+import { getCurrentUser, setCurrentUser, getCurrentAdminUser, setCurrentAdminUser, User, AdminUser } from '@/lib/storage'
 
 const loanProducts = [
   { name: 'Personal Loan', href: '/personal-loan' },
@@ -23,8 +24,8 @@ export default function Header() {
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
   const [isAdminDropdownOpen, setIsAdminDropdownOpen] = useState(false)
-  const [currentUser, setCurrentUser] = useState<any>(null)
-  const [adminUser, setAdminUser] = useState<any>(null)
+  const [currentUser, setCurrentUserState] = useState<User | null>(null)
+  const [adminUser, setAdminUserState] = useState<AdminUser | null>(null)
   const pathname = usePathname()
   const router = useRouter()
   
@@ -32,23 +33,23 @@ export default function Header() {
   const isUserRoute = pathname.startsWith('/user')
 
   useEffect(() => {
-    const user = localStorage.getItem('insta_user')
-    if (user) setCurrentUser(JSON.parse(user))
+    const user = getCurrentUser()
+    if (user) setCurrentUserState(user)
     
-    const admin = localStorage.getItem('admin_user')
-    if (admin) setAdminUser(JSON.parse(admin))
+    const admin = getCurrentAdminUser()
+    if (admin) setAdminUserState(admin)
   }, [])
 
   const handleUserLogout = () => {
-    localStorage.removeItem('insta_user')
     setCurrentUser(null)
+    setCurrentUserState(null)
     setIsUserDropdownOpen(false)
     router.push('/')
   }
 
   const handleAdminLogout = () => {
-    localStorage.removeItem('admin_user')
-    setAdminUser(null)
+    setCurrentAdminUser(null)
+    setAdminUserState(null)
     setIsAdminDropdownOpen(false)
     router.push('/admin/login')
   }
