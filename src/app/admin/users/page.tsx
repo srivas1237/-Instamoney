@@ -1,21 +1,29 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { USERS, User, ROLE_PERMISSIONS } from '../layout'
+import { getAdminUsers, getCurrentAdminUser, InstaAdminUser } from '@/lib/storage'
+
+// Role permissions configuration
+const ROLE_PERMISSIONS: Record<string, string[]> = {
+  super_admin: ['view_leads', 'edit_leads', 'delete_leads', 'manage_users', 'view_reports'],
+  admin: ['view_leads', 'edit_leads', 'view_reports'],
+  agent: ['view_leads', 'edit_leads'],
+}
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>(USERS)
-  const [user, setUser] = useState<User | null>(null)
+  const [users, setUsers] = useState<InstaAdminUser[]>([])
+  const [user, setUser] = useState<InstaAdminUser | null>(null)
 
   useEffect(() => {
-    const loggedInUser = localStorage.getItem('admin_user')
+    setUsers(getAdminUsers())
+    const loggedInUser = getCurrentAdminUser()
     if (loggedInUser) {
-      setUser(JSON.parse(loggedInUser))
+      setUser(loggedInUser)
     }
   }, [])
 
   // Check if user has permission to manage users
-  if (!user || !ROLE_PERMISSIONS[user.role].includes('manage_users')) {
+  if (!user || user.role !== 'super_admin') {
     return (
       <div className="text-center py-12">
         <h2 className="text-xl font-bold text-gray-800">Access Denied</h2>
