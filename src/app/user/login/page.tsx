@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { getCurrentUser, setCurrentUser } from '@/lib/storage'
 
 interface User {
   id: string
@@ -23,7 +24,7 @@ export default function UserLoginPage() {
   const router = useRouter()
 
   useEffect(() => {
-    const existingUser = localStorage.getItem('insta_user')
+    const existingUser = getCurrentUser()
     if (existingUser) {
       router.push('/user/dashboard')
     }
@@ -43,7 +44,7 @@ export default function UserLoginPage() {
       if (user) {
         // Omit password when storing in session
         const { password, ...userWithoutPassword } = user
-        localStorage.setItem('insta_user', JSON.stringify(userWithoutPassword))
+        setCurrentUser(userWithoutPassword)
         router.push('/user/dashboard')
       } else {
         setError('Invalid email or password')
@@ -71,7 +72,7 @@ export default function UserLoginPage() {
       
       // Auto login after signup
       const { password, ...userWithoutPassword } = newUser
-      localStorage.setItem('insta_user', JSON.stringify(userWithoutPassword))
+      setCurrentUser(userWithoutPassword)
       router.push('/user/dashboard')
     }
   }

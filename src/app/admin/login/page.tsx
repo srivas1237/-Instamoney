@@ -1,27 +1,35 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { getAdminUsers, InstaAdminUser } from '@/lib/storage'
+import { adminLogin, getCurrentAdminUser } from '@/lib/storage'
 
 export default function LoginPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    const adminUsers = getAdminUsers()
-    const user = adminUsers.find(u => u.username === username)
-    
-    // Check password (matches demo credentials)
-    if (user && password === user.password) {
-      localStorage.setItem('admin_user', JSON.stringify(user))
+  useEffect(() => {
+    const existingAdmin = getCurrentAdminUser()
+    if (existingAdmin) {
       router.push('/admin')
-    } else {
-      setError('Invalid credentials')
+    }
+  }, [router])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setIsSubmitting(true)
+
+    try {
+      await adminLogin({ username, password })
+      router.push('/admin')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Invalid credentials')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -75,17 +83,18 @@ export default function LoginPage() {
           
           <button
             type="submit"
+            disabled={isSubmitting}
             className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
           >
-            Sign In
+            {isSubmitting ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
         
         <div className="mt-6 text-center text-sm text-gray-500">
           <p>Demo credentials:</p>
-          <p className="mt-1">superadmin / superadmin</p>
-          <p>admin / admin</p>
-          <p>agent / agent</p>
+          <p className="mt-1">superadmin / SuperAdmin@123</p>
+          <p>admin / Admin@123</p>
+          <p>agent / Agent@123</p>
         </div>
       </div>
     </div>

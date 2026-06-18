@@ -2,46 +2,85 @@
 
 import { useEffect, useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
+import { getDashboardStats, getReports } from '@/lib/storage'
 
-interface Lead {
-  id: number
-  loanType: string
-  status: string
-  createdAt: string
+type DashboardStats = {
+  totalLeads: number
+  newLeads: number
+  inProgressLeads: number
+  approvedLeads: number
+  recentLeads: any[]
+  totalCases: number
+  openCases: number
+}
+
+type ReportBucket = { _id: string; count: number }
+type ReportsData = {
+  leadsByStatus: ReportBucket[]
+  leadsByType: ReportBucket[]
+  casesByStatus: ReportBucket[]
 }
 
 export default function AdminDashboard() {
-  const [leads, setLeads] = useState<Lead[]>([])
+  const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [reports, setReports] = useState<ReportsData | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const savedLeads = JSON.parse(localStorage.getItem('loan_leads') || '[]')
-    setLeads(savedLeads)
+    let isMounted = true
+
+    const refresh = async (showLoading: boolean) => {
+      if (showLoading) setIsLoading(true)
+      try {
+        const [nextStats, nextReports] = await Promise.all([getDashboardStats(), getReports()])
+        if (!isMounted) return
+        setStats(nextStats as DashboardStats)
+        setReports(nextReports as ReportsData)
+      } finally {
+        if (showLoading && isMounted) setIsLoading(false)
+      }
+    }
+
+    refresh(true)
+
+    const onLeadsUpdated = () => refresh(false)
+    window.addEventListener('insta:leads_updated', onLeadsUpdated)
+
+    let bc: BroadcastChannel | null = null
+    try {
+      bc = new BroadcastChannel('instamoney')
+      bc.onmessage = (event) => {
+        if (event?.data?.type === 'leads_updated') refresh(false)
+      }
+    } catch {}
+
+    const intervalId = window.setInterval(() => refresh(false), 10000)
+
+    return () => {
+      isMounted = false
+      window.removeEventListener('insta:leads_updated', onLeadsUpdated)
+      if (bc) bc.close()
+      window.clearInterval(intervalId)
+    }
   }, [])
 
-  // Data for charts
   const loanTypeData = () => {
-    const counts: Record<string, number> = {}
-    leads.forEach(lead => {
-      counts[lead.loanType] = (counts[lead.loanType] || 0) + 1
-    })
-    return Object.entries(counts).map(([name, value]) => ({ name, value }))
+    const buckets = Array.isArray(reports?.leadsByType) ? reports!.leadsByType : []
+    return buckets.map((b) => ({ name: b._id, value: b.count }))
   }
 
   const statusData = () => {
-    const counts: Record<string, number> = {}
-    leads.forEach(lead => {
-      counts[lead.status] = (counts[lead.status] || 0) + 1
-    })
-    return Object.entries(counts).map(([name, value]) => ({ name, value }))
+    const buckets = Array.isArray(reports?.leadsByStatus) ? reports!.leadsByStatus : []
+    return buckets.map((b) => ({ name: b._id, value: b.count }))
   }
 
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8']
 
-  const stats = [
-    { label: 'Total Leads', value: leads.length, color: 'bg-blue-500' },
-    { label: 'New Leads', value: leads.filter(l => l.status === 'new').length, color: 'bg-green-500' },
-    { label: 'In Progress', value: leads.filter(l => l.status === 'in_progress').length, color: 'bg-yellow-500' },
-    { label: 'Closed', value: leads.filter(l => l.status === 'closed').length, color: 'bg-gray-500' }
+  const statCards = [
+    { label: 'Total Leads', value: stats?.totalLeads ?? 0, color: 'bg-blue-500' },
+    { label: 'New Leads', value: stats?.newLeads ?? 0, color: 'bg-green-500' },
+    { label: 'In Progress', value: stats?.inProgressLeads ?? 0, color: 'bg-yellow-500' },
+    { label: 'Approved', value: stats?.approvedLeads ?? 0, color: 'bg-purple-500' }
   ]
 
   return (
@@ -51,9 +90,8 @@ export default function AdminDashboard() {
         <p className="text-gray-500">Welcome to InstaMoney Admin</p>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {stats.map((stat, idx) => (
+        {statCards.map((stat, idx) => (
           <div key={idx} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
@@ -68,9 +106,11 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      {/* Charts */}
+      {isLoading && (
+        <div className="text-sm text-gray-500 mb-6">Loading dashboard...</div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Loan Types Chart */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Leads by Loan Type</h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -84,7 +124,6 @@ export default function AdminDashboard() {
           </ResponsiveContainer>
         </div>
 
-        {/* Status Distribution Chart */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Leads by Status</h2>
           <ResponsiveContainer width="100%" height={300}>

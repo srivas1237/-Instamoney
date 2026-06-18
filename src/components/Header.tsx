@@ -31,14 +31,20 @@ export default function Header() {
   
   const isAdminRoute = pathname.startsWith('/admin')
   const isUserRoute = pathname.startsWith('/user')
+  const isAdminLoginPage = pathname === '/admin/login'
 
   useEffect(() => {
     const user = getCurrentUser()
-    if (user) setCurrentUserState(user)
+    setCurrentUserState(user)
     
+    if (isAdminLoginPage) {
+      setAdminUserState(null)
+      return
+    }
+
     const admin = getCurrentAdminUser()
-    if (admin) setAdminUserState(admin)
-  }, [])
+    setAdminUserState(admin)
+  }, [pathname, isAdminLoginPage])
 
   const handleUserLogout = () => {
     setCurrentUser(null)
@@ -107,7 +113,7 @@ export default function Header() {
           )}
 
           <div className="hidden md:flex items-center gap-4">
-            {isAdminRoute && adminUser ? (
+            {isAdminRoute && !isAdminLoginPage && adminUser ? (
               <div className="relative">
                 <button
                   onClick={() => setIsAdminDropdownOpen(!isAdminDropdownOpen)}
@@ -262,7 +268,7 @@ export default function Header() {
               </>
             )}
             
-            {isAdminRoute && adminUser ? (
+            {isAdminRoute && !isAdminLoginPage && adminUser ? (
               <>
                 <Link
                   href="/admin"

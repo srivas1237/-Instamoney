@@ -2,11 +2,20 @@
 
 import { useEffect, useState } from 'react'
 import { Plus, Edit, Trash2, X } from 'lucide-react'
-import { getAdminUsers, setAdminUsers, getCurrentAdminUser, InstaAdminUser, ROLE_PERMISSIONS } from '@/lib/storage'
+import { createAdminUser, deleteAdminUser, getAdminUsers, getCurrentAdminUser, InstaAdminUser, ROLE_PERMISSIONS, updateAdminUser } from '@/lib/storage'
 
 type AddEditUserFormData = Omit<InstaAdminUser, 'id'>
 
 const ALL_PERMISSIONS = ['view_leads', 'edit_leads', 'delete_leads', 'manage_users', 'view_reports']
+
+const normalizeAdminUsers = (data: any): InstaAdminUser[] => {
+  if (!Array.isArray(data)) return []
+  return data.map((u: any) => ({
+    ...u,
+    id: (u?.id || u?._id || '').toString(),
+    permissions: Array.isArray(u?.permissions) ? u.permissions : [],
+  }))
+}
 
 export default function UsersPage() {
   const [users, setUsers] = useState<InstaAdminUser[]>([])
@@ -14,6 +23,7 @@ export default function UsersPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editingUser, setEditingUser] = useState<InstaAdminUser | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const [addFormData, setAddFormData] = useState<AddEditUserFormData>({
     username: '',
     name: '',
@@ -28,11 +38,18 @@ export default function UsersPage() {
   const [editFormData, setEditFormData] = useState<Partial<AddEditUserFormData>>({})
 
   useEffect(() => {
-    setUsers(getAdminUsers())
     const loggedInUser = getCurrentAdminUser()
     if (loggedInUser) {
       setUser(loggedInUser)
     }
+    ;(async () => {
+      try {
+        const data = await getAdminUsers()
+        setUsers(normalizeAdminUsers(data))
+      } finally {
+        setIsLoading(false)
+      }
+    })()
   }, [])
 
   // Check if user has permission to manage users
@@ -45,16 +62,16 @@ export default function UsersPage() {
     )
   }
 
-  const handleAddUserSubmit = (e: React.FormEvent) => {
+  const handleAddUserSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const newUser: InstaAdminUser = {
-      id: Date.now().toString(),
-      ...addFormData,
+    try {
+      await createAdminUser(addFormData)
+      const data = await getAdminUsers()
+      setUsers(normalizeAdminUsers(data))
+      setIsAddModalOpen(false)
+    } catch {
+      return
     }
-    const updatedUsers = [...users, newUser]
-    setUsers(updatedUsers)
-    setAdminUsers(updatedUsers)
-    setIsAddModalOpen(false)
     setAddFormData({
       username: '',
       name: '',
@@ -74,24 +91,31 @@ export default function UsersPage() {
     setIsEditModalOpen(true)
   }
 
-  const handleEditUserSubmit = (e: React.FormEvent) => {
+  const handleEditUserSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!editingUser) return
-    const updatedUsers = users.map(u =>
-      u.id === editingUser.id ? { ...u, ...editFormData } as InstaAdminUser : u
-    )
-    setUsers(updatedUsers)
-    setAdminUsers(updatedUsers)
-    setIsEditModalOpen(false)
-    setEditingUser(null)
-    setEditFormData({})
+    try {
+      await updateAdminUser(editingUser.id, editFormData)
+      const data = await getAdminUsers()
+      setUsers(normalizeAdminUsers(data))
+      setIsEditModalOpen(false)
+      setEditingUser(null)
+      setEditFormData({})
+    } catch {
+      return
+    }
   }
 
-  const handleDeleteUser = (id: string) => {
+  const handleDeleteUser = async (id: string) => {
     if (confirm('Are you sure you want to delete this user?')) {
-      const updatedUsers = users.filter(u => u.id !== id)
-      setUsers(updatedUsers)
-      setAdminUsers(updatedUsers)
+      const nextUsers = users.filter(u => u.id !== id)
+      setUsers(nextUsers)
+      try {
+        await deleteAdminUser(id)
+      } catch {
+        const data = await getAdminUsers()
+        setUsers(normalizeAdminUsers(data))
+      }
     }
   }
 
@@ -112,6 +136,9 @@ export default function UsersPage() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        {isLoading && (
+          <div className="p-6 text-sm text-gray-500">Loading users...</div>
+        )}
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
@@ -124,7 +151,7 @@ export default function UsersPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {users.map((u) => (
+              {(Array.isArray(users) ? users : []).map((u) => (
                 <tr key={u.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">{u.name}</div>
@@ -139,7 +166,7 @@ export default function UsersPage() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-wrap gap-1">
-                      {u.permissions.map(perm => (
+                      {(u.permissions || []).map(perm => (
                         <span key={perm} className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">
                           {perm.replace('_', ' ')}
                         </span>

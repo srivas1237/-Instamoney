@@ -2,26 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import { Plus, User, Phone, Mail, DollarSign, ArrowRight, Trash2 } from 'lucide-react'
-import { getLeads, setLeads, getCurrentAdminUser, InstaLead, InstaAdminUser } from '@/lib/storage'
+import { createLead, deleteLead, getCurrentAdminUser, getLeads, InstaLead, InstaAdminUser, updateLead } from '@/lib/storage'
 
-// For backward compatibility
-const migrateLeads = () => {
-  const oldLeads = JSON.parse(localStorage.getItem('loan_leads') || '[]')
-  const newLeads = getLeads()
-  if (oldLeads.length > 0 && newLeads.length === 0) {
-    const migrated = oldLeads.map((l: any) => ({
-      id: l.id.toString(),
-      name: l.fullName,
-      phone: l.mobileNumber,
-      email: l.email,
-      loanType: l.loanType,
-      amount: l.loanAmount || '',
-      status: l.status,
-      createdAt: l.createdAt,
-      userId: l.userId,
-    } as InstaLead))
-    setLeads(migrated)
-  }
+const normalizeLeads = (data: any): InstaLead[] => {
+  if (!Array.isArray(data)) return []
+  return data.map((lead: any) => ({
+    ...lead,
+    id: (lead?.id || lead?._id || '').toString(),
+    createdAt: lead?.createdAt ? new Date(lead.createdAt).toISOString() : new Date().toISOString(),
+  }))
 }
 
 export default function LeadsPage() {
@@ -29,6 +18,8 @@ export default function LeadsPage() {
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [user, setUser] = useState<InstaAdminUser | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [submitError, setSubmitError] = useState<string>('')
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -39,10 +30,16 @@ export default function LeadsPage() {
   })
 
   useEffect(() => {
-    migrateLeads()
-    setLeadsState(getLeads())
     const currentUser = getCurrentAdminUser()
     setUser(currentUser)
+    ;(async () => {
+      try {
+        const data = await getLeads()
+        setLeadsState(normalizeLeads(data))
+      } finally {
+        setIsLoading(false)
+      }
+    })()
   }, [])
 
   const filteredLeads = filterStatus === 'all' 
@@ -64,48 +61,65 @@ export default function LeadsPage() {
   const canEdit = hasPermission('edit_leads')
   const canDelete = user?.role === 'super_admin'
 
-  const updateLeadStatus = (id: string, newStatus: InstaLead['status']) => {
-    const updatedLeads = leads.map(lead => 
-      lead.id === id ? { ...lead, status: newStatus } : lead
-    )
-    setLeads(updatedLeads)
-    setLeadsState(updatedLeads)
+  const updateLeadStatus = async (id: string, newStatus: InstaLead['status']) => {
+    const nextLeads = leads.map((lead) => (lead.id === id ? { ...lead, status: newStatus } : lead))
+    setLeadsState(nextLeads)
+    try {
+      await updateLead(id, { status: newStatus })
+    } catch {
+      const data = await getLeads()
+      setLeadsState(normalizeLeads(data))
+    }
   }
 
-  const deleteLead = (id: string) => {
+  const handleDeleteLead = async (id: string) => {
     if (confirm('Are you sure you want to delete this lead?')) {
-      const updatedLeads = leads.filter(lead => lead.id !== id)
-      setLeads(updatedLeads)
-      setLeadsState(updatedLeads)
+      const nextLeads = leads.filter((lead) => lead.id !== id)
+      setLeadsState(nextLeads)
+      try {
+        await deleteLead(id)
+      } catch {
+        const data = await getLeads()
+        setLeadsState(normalizeLeads(data))
+      }
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const newLead: InstaLead = {
-      id: Date.now().toString(),
-      name: formData.name,
-      phone: formData.phone,
-      email: formData.email,
-      loanType: formData.loanType,
-      amount: formData.amount,
-      status: 'new',
-      createdAt: new Date().toISOString(),
-      notes: formData.notes,
-      assignedTo: user?.id,
+    setSubmitError('')
+    try {
+      const created = await createLead({
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        loanType: formData.loanType,
+        amount: formData.amount,
+        notes: formData.notes,
+      })
+      const createdLead = normalizeLeads([created])[0]
+      if (createdLead) {
+        setLeadsState([createdLead, ...leads])
+      }
+      setIsModalOpen(false)
+      setFormData({
+        name: '',
+        phone: '',
+        email: '',
+        loanType: 'personal-loan',
+        amount: '',
+        notes: '',
+      })
+
+      try {
+        const data = await getLeads()
+        setLeadsState(normalizeLeads(data))
+      } catch {
+        // ignore refresh failure, optimistic update already applied
+      }
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Unable to create lead')
     }
-    const updatedLeads = [...leads, newLead]
-    setLeads(updatedLeads)
-    setLeadsState(updatedLeads)
-    setIsModalOpen(false)
-    setFormData({
-      name: '',
-      phone: '',
-      email: '',
-      loanType: 'personal-loan',
-      amount: '',
-      notes: '',
-    })
   }
 
   return (
@@ -141,6 +155,9 @@ export default function LeadsPage() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        {isLoading && (
+          <div className="p-6 text-sm text-gray-500">Loading leads...</div>
+        )}
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
@@ -156,7 +173,7 @@ export default function LeadsPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredLeads.map((lead) => (
+              {(Array.isArray(filteredLeads) ? filteredLeads : []).map((lead) => (
                 <tr key={lead.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">{lead.name}</div>
@@ -204,7 +221,7 @@ export default function LeadsPage() {
                       )}
                       {canDelete && (
                         <button 
-                          onClick={() => deleteLead(lead.id)} 
+                          onClick={() => handleDeleteLead(lead.id)} 
                           className="text-red-600 hover:text-red-900 p-1"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -218,7 +235,7 @@ export default function LeadsPage() {
           </table>
         </div>
 
-        {filteredLeads.length === 0 && (
+        {(Array.isArray(filteredLeads) ? filteredLeads.length : 0) === 0 && (
           <div className="text-center py-12">
             <p className="text-gray-500">No leads found</p>
           </div>
@@ -240,6 +257,11 @@ export default function LeadsPage() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
+                {submitError && (
+                  <div className="p-3 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm">
+                    {submitError}
+                  </div>
+                )}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
                     <User className="h-4 w-4" />
@@ -307,6 +329,7 @@ export default function LeadsPage() {
                     Loan Amount
                   </label>
                   <input
+                    required
                     type="number"
                     value={formData.amount}
                     onChange={(e) => setFormData({ ...formData, amount: e.target.value })}

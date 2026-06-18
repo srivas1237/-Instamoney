@@ -1,16 +1,23 @@
+import { api } from './api';
+import { secureStorage, sanitizeInput } from './security';
+
 export interface InstaUser {
   id: string;
+  _id?: string;
   name: string;
   email: string;
   phone: string;
-  password: string;
+  password?: string;
   pan?: string;
   aadhaar?: string;
   address?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface InstaAdminUser {
   id: string;
+  _id?: string;
   username: string;
   name: string;
   email: string;
@@ -19,11 +26,14 @@ export interface InstaAdminUser {
   band: 'A' | 'B' | 'C' | 'D';
   role: 'super_admin' | 'admin' | 'agent';
   permissions: string[];
-  password: string;
+  password?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface InstaLead {
   id: string;
+  _id?: string;
   name: string;
   phone: string;
   email: string;
@@ -32,18 +42,20 @@ export interface InstaLead {
   status: 'new' | 'in_progress' | 'approved' | 'rejected' | 'disbursed';
   createdAt: string;
   notes?: string;
-  assignedTo?: string;
-  userId?: string;
+  assignedTo?: string | any;
+  userId?: string | any;
+  updatedAt?: string;
 }
 
 export interface InstaCase {
   id: string;
+  _id?: string;
   title: string;
   description: string;
   type: 'compliance' | 'case';
   status: 'open' | 'in_progress' | 'resolved' | 'closed';
-  assignedTo: string;
-  assignedBy: string;
+  assignedTo: string | any;
+  assignedBy: string | any;
   resolution?: string;
   createdAt: string;
   updatedAt: string;
@@ -53,116 +65,288 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
   super_admin: ['view_leads', 'edit_leads', 'delete_leads', 'manage_users', 'view_reports'],
   admin: ['view_leads', 'edit_leads', 'view_reports'],
   agent: ['view_leads', 'edit_leads'],
-}
-
-export const getUsers = (): InstaUser[] => {
-  return JSON.parse(localStorage.getItem('insta_users') || '[]');
 };
 
-export const setUsers = (users: InstaUser[]) => {
-  localStorage.setItem('insta_users', JSON.stringify(users));
+const isMongoObjectId = (value: unknown): value is string => {
+  return typeof value === 'string' && /^[a-f0-9]{24}$/i.test(value);
 };
 
+const emitLeadsUpdated = () => {
+  if (typeof window === 'undefined') return;
+  try {
+    window.dispatchEvent(new Event('insta:leads_updated'));
+  } catch {}
+  try {
+    const bc = new BroadcastChannel('instamoney');
+    bc.postMessage({ type: 'leads_updated', ts: Date.now() });
+    bc.close();
+  } catch {}
+};
+
+// ==================== TOKEN & USER MANAGEMENT ====================
+
+/**
+ * Get current regular user from secure storage
+ */
 export const getCurrentUser = (): InstaUser | null => {
-  const user = localStorage.getItem('insta_user');
-  return user ? JSON.parse(user) : null;
+  const user = secureStorage.getItem('insta_user');
+  return user ? (user as InstaUser) : null;
 };
 
+/**
+ * Set current regular user in secure storage
+ */
 export const setCurrentUser = (user: InstaUser | null) => {
   if (user) {
-    localStorage.setItem('insta_user', JSON.stringify(user));
+    const userData = {
+      ...user,
+      id: user.id || user._id,
+      // Never store password in storage
+      password: undefined,
+    };
+    secureStorage.setItem('insta_user', userData);
   } else {
-    localStorage.removeItem('insta_user');
+    secureStorage.removeItem('insta_user');
+    secureStorage.removeItem('token');
   }
 };
 
-export const getAdminUsers = (): InstaAdminUser[] => {
-  const users = JSON.parse(localStorage.getItem('admin_users') || '[]');
-  if (users.length === 0) {
-    const defaultUsers: InstaAdminUser[] = [
-      {
-        id: '1',
-        username: 'superadmin',
-        name: 'Super Admin',
-        email: 'superadmin@instamoney.com',
-        phone: '9876543210',
-        employeeId: 'EMP001',
-        band: 'A',
-        role: 'super_admin',
-        permissions: ROLE_PERMISSIONS.super_admin,
-        password: 'superadmin',
-      },
-      {
-        id: '2',
-        username: 'admin',
-        name: 'Admin User',
-        email: 'admin@instamoney.com',
-        phone: '9876543211',
-        employeeId: 'EMP002',
-        band: 'B',
-        role: 'admin',
-        permissions: ROLE_PERMISSIONS.admin,
-        password: 'admin',
-      },
-      {
-        id: '3',
-        username: 'agent',
-        name: 'Agent User',
-        email: 'agent@instamoney.com',
-        phone: '9876543212',
-        employeeId: 'EMP003',
-        band: 'C',
-        role: 'agent',
-        permissions: ROLE_PERMISSIONS.agent,
-        password: 'agent',
-      },
-    ];
-    setAdminUsers(defaultUsers);
-    return defaultUsers;
-  }
-  // Add permissions to existing users if missing (backward compatibility)
-  const usersWithPermissions: InstaAdminUser[] = users.map((u: any) => ({
-    ...u,
-    permissions: u.permissions || ROLE_PERMISSIONS[u.role] || [],
-  }));
-  return usersWithPermissions;
-};
-
-export const setAdminUsers = (users: InstaAdminUser[]) => {
-  localStorage.setItem('admin_users', JSON.stringify(users));
-};
-
+/**
+ * Get current admin user from secure storage
+ */
 export const getCurrentAdminUser = (): InstaAdminUser | null => {
-  const user = localStorage.getItem('admin_user');
+  const user = secureStorage.getItem('admin_user');
   if (!user) return null;
-  const parsedUser = JSON.parse(user);
-  // Add permissions if missing (backward compatibility)
+  const parsedUser = user as InstaAdminUser;
   return {
     ...parsedUser,
+    id: parsedUser.id || parsedUser._id,
     permissions: parsedUser.permissions || ROLE_PERMISSIONS[parsedUser.role] || [],
   };
 };
 
+/**
+ * Set current admin user in secure storage
+ */
 export const setCurrentAdminUser = (user: InstaAdminUser | null) => {
   if (user) {
-    localStorage.setItem('admin_user', JSON.stringify(user));
+    const userData = {
+      ...user,
+      id: user.id || user._id,
+      // Never store password in storage
+      password: undefined,
+    };
+    secureStorage.setItem('admin_user', userData);
   } else {
-    localStorage.removeItem('admin_user');
+    secureStorage.removeItem('admin_user');
+    secureStorage.removeItem('token');
   }
 };
 
-export const getLeads = (): InstaLead[] => {
-  return JSON.parse(localStorage.getItem('insta_leads') || '[]');
+// ==================== API FUNCTIONS ====================
+
+/**
+ * User signup with data sanitization
+ */
+export const userSignup = async (data: { name: string; email: string; phone: string; password: string }) => {
+  const sanitizedData = {
+    name: sanitizeInput(data.name),
+    email: sanitizeInput(data.email),
+    phone: sanitizeInput(data.phone),
+    password: data.password, // Don't sanitize password to preserve complexity
+  };
+  
+  const result = await api.post('/auth/user/signup', sanitizedData);
+  secureStorage.setItem('token', result.token);
+  setCurrentUser(result.user);
+  return result;
 };
 
-export const setLeads = (leads: InstaLead[]) => {
-  localStorage.setItem('insta_leads', JSON.stringify(leads));
+/**
+ * User login with data sanitization
+ */
+export const userLogin = async (data: { email: string; password: string }) => {
+  const sanitizedData = {
+    email: sanitizeInput(data.email),
+    password: data.password, // Don't sanitize password
+  };
+  
+  const result = await api.post('/auth/user/login', sanitizedData);
+  secureStorage.setItem('token', result.token);
+  setCurrentUser(result.user);
+  return result;
 };
 
-export const getCases = (): InstaCase[] => {
-  return JSON.parse(localStorage.getItem('insta_cases') || '[]');
+/**
+ * Admin login with data sanitization
+ */
+export const adminLogin = async (data: { username: string; password: string }) => {
+  const sanitizedData = {
+    username: sanitizeInput(data.username),
+    password: data.password, // Don't sanitize password
+  };
+  
+  const result = await api.post('/auth/admin/login', sanitizedData);
+  secureStorage.setItem('token', result.token);
+  setCurrentAdminUser(result.admin);
+  return result;
 };
 
-export const setCases = (cases: InstaCase[]) => {
-  localStorage.setItem('insta_cases', JSON.stringify(cases));
+/**
+ * Logout - clears all secure storage
+ */
+export const logout = () => {
+  secureStorage.clear();
 };
+
+/**
+ * Create lead with sanitized data
+ */
+export const createLead = async (data: any) => {
+  const sanitizedData = {
+    name: sanitizeInput(data.name),
+    phone: sanitizeInput(data.phone),
+    email: sanitizeInput(data.email),
+    loanType: sanitizeInput(data.loanType),
+    amount: sanitizeInput(data.amount),
+    notes: data.notes ? sanitizeInput(data.notes) : undefined,
+    userId: isMongoObjectId(data.userId) ? data.userId : undefined,
+  };
+  
+  const result = await api.post('/leads', sanitizedData);
+  emitLeadsUpdated();
+  return result;
+};
+
+export const getLeads = async () => {
+  return api.get('/leads');
+};
+
+export const updateLead = async (id: string, data: any) => {
+  const sanitizedData = {
+    ...data,
+    notes: data.notes ? sanitizeInput(data.notes) : undefined,
+  };
+  
+  const result = await api.put(`/leads/${id}`, sanitizedData);
+  emitLeadsUpdated();
+  return result;
+};
+
+export const deleteLead = async (id: string) => {
+  const result = await api.delete(`/leads/${id}`);
+  emitLeadsUpdated();
+  return result;
+};
+
+export const getDashboardStats = async () => {
+  return api.get('/admin/dashboard');
+};
+
+export const getCases = async () => {
+  return api.get('/admin/cases');
+};
+
+export const createCase = async (data: any) => {
+  const sanitizedData = {
+    title: sanitizeInput(data.title),
+    description: sanitizeInput(data.description),
+    type: data.type,
+    status: data.status,
+    assignedTo: data.assignedTo,
+  };
+  
+  return api.post('/admin/cases', sanitizedData);
+};
+
+export const updateCase = async (id: string, data: any) => {
+  const sanitizedData = {
+    ...data,
+    title: data.title ? sanitizeInput(data.title) : undefined,
+    description: data.description ? sanitizeInput(data.description) : undefined,
+    resolution: data.resolution ? sanitizeInput(data.resolution) : undefined,
+  };
+  
+  return api.put(`/admin/cases/${id}`, sanitizedData);
+};
+
+export const getReports = async () => {
+  return api.get('/admin/reports');
+};
+
+export const getAdminUsers = async () => {
+  return api.get('/users/admin');
+};
+
+export const createAdminUser = async (data: any) => {
+  const sanitizedData = {
+    username: sanitizeInput(data.username),
+    name: sanitizeInput(data.name),
+    email: sanitizeInput(data.email),
+    phone: sanitizeInput(data.phone),
+    employeeId: sanitizeInput(data.employeeId),
+    band: data.band,
+    role: data.role,
+    permissions: data.permissions,
+    password: data.password,
+  };
+  
+  return api.post('/users/admin', sanitizedData);
+};
+
+export const updateAdminUser = async (id: string, data: any) => {
+  const sanitizedData = {
+    ...data,
+    name: data.name ? sanitizeInput(data.name) : undefined,
+    email: data.email ? sanitizeInput(data.email) : undefined,
+    phone: data.phone ? sanitizeInput(data.phone) : undefined,
+  };
+  
+  return api.put(`/users/admin/${id}`, sanitizedData);
+};
+
+export const deleteAdminUser = async (id: string) => {
+  return api.delete(`/users/admin/${id}`);
+};
+
+export const getAdminProfile = async () => {
+  return api.get('/users/admin/profile');
+};
+
+export const updateAdminProfile = async (data: any) => {
+  const sanitizedData = {
+    ...data,
+    name: data.name ? sanitizeInput(data.name) : undefined,
+    phone: data.phone ? sanitizeInput(data.phone) : undefined,
+  };
+  
+  return api.put('/users/admin/profile', sanitizedData);
+};
+
+export const getUserProfile = async () => {
+  return api.get('/users/profile');
+};
+
+export const updateUserProfile = async (data: any) => {
+  const sanitizedData = {
+    ...data,
+    name: data.name ? sanitizeInput(data.name) : undefined,
+    phone: data.phone ? sanitizeInput(data.phone) : undefined,
+    pan: data.pan ? sanitizeInput(data.pan) : undefined,
+    aadhaar: data.aadhaar ? sanitizeInput(data.aadhaar) : undefined,
+    address: data.address ? sanitizeInput(data.address) : undefined,
+  };
+  
+  return api.put('/users/profile', sanitizedData);
+};
+
+export const getUserLeads = async (userId: string) => {
+  return api.get(`/leads/user/${userId}`);
+};
+
+// Keep these for backward compatibility but mark as deprecated
+export const getUsers = () => { console.warn('getUsers is deprecated, use API instead'); return []; };
+export const setUsers = () => { console.warn('setUsers is deprecated, use API instead'); };
+export const setLeads = () => { console.warn('setLeads is deprecated, use API instead'); };
+export const setCases = () => { console.warn('setCases is deprecated, use API instead'); };
+export const setAdminUsers = () => { console.warn('setAdminUsers is deprecated, use API instead'); };

@@ -2,13 +2,42 @@
 
 import { useState, useEffect } from 'react'
 import { Plus, FileText, User, Calendar, ArrowRight } from 'lucide-react'
-import { getCases, setCases, getAdminUsers, InstaCase, InstaAdminUser, getCurrentAdminUser } from '@/lib/storage'
+import { createCase, getAdminUsers, getCases, getCurrentAdminUser, InstaCase, InstaAdminUser } from '@/lib/storage'
+
+const getId = (value: any): string => {
+  if (!value) return ''
+  if (typeof value === 'string') return value
+  if (typeof value === 'object') return (value.id || value._id || '').toString()
+  return ''
+}
+
+const normalizeCases = (data: any): InstaCase[] => {
+  if (!Array.isArray(data)) return []
+  return data.map((c: any) => ({
+    ...c,
+    id: getId(c?.id || c?._id || c?.id),
+    assignedTo: c?.assignedTo,
+    assignedBy: c?.assignedBy,
+    createdAt: c?.createdAt ? new Date(c.createdAt).toISOString() : new Date().toISOString(),
+    updatedAt: c?.updatedAt ? new Date(c.updatedAt).toISOString() : new Date().toISOString(),
+  }))
+}
+
+const normalizeAdminUsers = (data: any): InstaAdminUser[] => {
+  if (!Array.isArray(data)) return []
+  return data.map((u: any) => ({
+    ...u,
+    id: getId(u?.id || u?._id || u?.id),
+    permissions: Array.isArray(u?.permissions) ? u.permissions : [],
+  }))
+}
 
 export default function CasesPage() {
   const [cases, setCasesState] = useState<InstaCase[]>([])
   const [users, setUsers] = useState<InstaAdminUser[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentUser, setCurrentUser] = useState<InstaAdminUser | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const [formData, setFormData] = useState<Partial<InstaCase>>({
     title: '',
     description: '',
@@ -18,31 +47,39 @@ export default function CasesPage() {
   })
 
   useEffect(() => {
-    setCasesState(getCases())
-    setUsers(getAdminUsers().filter(u => u.role === 'agent' || u.role === 'admin'))
     setCurrentUser(getCurrentAdminUser())
+    ;(async () => {
+      try {
+        const [casesData, usersData] = await Promise.all([getCases(), getAdminUsers()])
+        setCasesState(normalizeCases(casesData))
+        const normalizedUsers = normalizeAdminUsers(usersData).filter(
+          (u) => u.role === 'agent' || u.role === 'admin'
+        )
+        setUsers(normalizedUsers)
+      } finally {
+        setIsLoading(false)
+      }
+    })()
   }, [])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!currentUser) return
-    
-    const newCase: InstaCase = {
-      id: Date.now().toString(),
-      title: formData.title!,
-      description: formData.description!,
-      type: formData.type as 'compliance' | 'case',
-      status: 'open',
-      assignedTo: formData.assignedTo!,
-      assignedBy: currentUser.id,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+
+    try {
+      await createCase({
+        title: formData.title,
+        description: formData.description,
+        type: formData.type,
+        status: 'open',
+        assignedTo: formData.assignedTo,
+      })
+      const casesData = await getCases()
+      setCasesState(normalizeCases(casesData))
+      setIsModalOpen(false)
+    } catch {
+      return
     }
-    
-    const updatedCases = [...cases, newCase]
-    setCases(updatedCases)
-    setCasesState(updatedCases)
-    setIsModalOpen(false)
     setFormData({
       title: '',
       description: '',
@@ -52,8 +89,16 @@ export default function CasesPage() {
     })
   }
 
-  const getAssignedUser = (id: string) => users.find(u => u.id === id)
-  const getAssignedByUser = (id: string) => getAdminUsers().find(u => u.id === id)
+  const getAssignedUserName = (assignedTo: any) => {
+    if (assignedTo && typeof assignedTo === 'object' && assignedTo.name) return assignedTo.name as string
+    const id = getId(assignedTo)
+    return users.find((u) => u.id === id)?.name || ''
+  }
+
+  const getAssignedUserInitial = (assignedTo: any) => {
+    const name = getAssignedUserName(assignedTo)
+    return name ? name.charAt(0) : ''
+  }
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -90,6 +135,9 @@ export default function CasesPage() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        {isLoading && (
+          <div className="p-6 text-sm text-gray-500">Loading cases...</div>
+        )}
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
@@ -142,12 +190,12 @@ export default function CasesPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      {getAssignedUser(c.assignedTo) && (
+                      {getAssignedUserName(c.assignedTo) && (
                         <div className="flex items-center gap-2">
                           <div className="h-8 w-8 bg-[#0052ff] rounded-full flex items-center justify-center text-white text-sm font-medium">
-                            {getAssignedUser(c.assignedTo)?.name?.charAt(0)}
+                            {getAssignedUserInitial(c.assignedTo)}
                           </div>
-                          <span className="text-gray-900">{getAssignedUser(c.assignedTo)?.name}</span>
+                          <span className="text-gray-900">{getAssignedUserName(c.assignedTo)}</span>
                         </div>
                       )}
                     </td>
