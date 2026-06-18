@@ -64,11 +64,11 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 shadow-lg transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4">
           <Link href="/" className="flex items-center gap-2">
             <img src="/instamoney-logo.png" alt="InstaMoney" className="h-10" />
           </Link>
@@ -102,7 +102,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
           })}
         </nav>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
+        <div className="sticky bottom-0 left-0 right-0 p-4 bg-white">
           <div className="flex items-center gap-3 mb-3">
             <div className="h-10 w-10 bg-[#0052ff] rounded-full flex items-center justify-center text-white font-bold">
               {currentUser?.name?.charAt(0) || 'U'}

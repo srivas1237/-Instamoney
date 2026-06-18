@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Home, BarChart3, Users, Settings, LogOut, Shield } from 'lucide-react'
+import { Home, BarChart3, Users, Settings, LogOut, Shield, Menu, X } from 'lucide-react'
 
 // Roles and permissions
 export type Role = 'super_admin' | 'admin' | 'agent'
@@ -30,6 +30,7 @@ export const USERS: User[] = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
 
@@ -55,90 +56,136 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return null // Loading or redirecting
   }
 
+  if (pathname === '/admin/login') {
+    return <>{children}</>
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {user ? (
-        <div className="flex">
-          {/* Sidebar */}
-          <aside className="w-64 bg-white shadow-lg min-h-screen">
-            <div className="p-4 border-b">
-              <Link href="/" className="flex items-center gap-2">
-                <img 
-                  src="/instamoney-logo.png" 
-                  alt="InstaMoney Logo" 
-                  className="h-10"
-                />
-              </Link>
-            </div>
-            <nav className="p-4">
-              <ul className="space-y-2">
-                <li>
-                  <Link 
-                    href="/admin" 
-                    className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 text-gray-700"
-                  >
-                    <Home className="h-5 w-5" />
-                    Dashboard
-                  </Link>
-                </li>
-                {ROLE_PERMISSIONS[user.role].includes('view_leads') && (
-                  <li>
-                    <Link 
-                      href="/admin/leads" 
-                      className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 text-gray-700"
-                    >
-                      <Users className="h-5 w-5" />
-                      Leads
-                    </Link>
-                  </li>
-                )}
-                {ROLE_PERMISSIONS[user.role].includes('view_reports') && (
-                  <li>
-                    <Link 
-                      href="/admin/reports" 
-                      className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 text-gray-700"
-                    >
-                      <BarChart3 className="h-5 w-5" />
-                      Reports
-                    </Link>
-                  </li>
-                )}
-                {ROLE_PERMISSIONS[user.role].includes('manage_users') && (
-                  <li>
-                    <Link 
-                      href="/admin/users" 
-                      className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 text-gray-700"
-                    >
-                      <Shield className="h-5 w-5" />
-                      Users
-                    </Link>
-                  </li>
-                )}
-              </ul>
-            </nav>
-            <div className="absolute bottom-0 w-64 p-4 border-t">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-600">{user.name}</span>
-                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">{user.role}</span>
-              </div>
-              <button 
-                onClick={handleLogout} 
-                className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700"
-              >
-                <LogOut className="h-4 w-4" />
-                Logout
-              </button>
-            </div>
-          </aside>
-          
-          {/* Main content */}
-          <main className="flex-1 p-6">
-            {children}
-          </main>
-        </div>
-      ) : (
-        children
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Mobile sidebar overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
       )}
+
+      {/* Sidebar */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="flex items-center justify-between p-4">
+          <Link href="/" className="flex items-center gap-2">
+            <img
+              src="/instamoney-logo.png"
+              alt="InstaMoney Logo"
+              className="h-10"
+            />
+          </Link>
+          <button
+            className="md:hidden text-gray-500 hover:text-gray-700"
+            onClick={() => setIsSidebarOpen(false)}
+          >
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+        <nav className="p-4">
+          <ul className="space-y-2">
+            <li>
+              <Link
+                href="/admin"
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                  pathname === '/admin'
+                    ? 'bg-[#0052ff] text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <Home className="h-5 w-5" />
+                Dashboard
+              </Link>
+            </li>
+            {ROLE_PERMISSIONS[user.role].includes('view_leads') && (
+              <li>
+                <Link
+                  href="/admin/leads"
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    pathname === '/admin/leads'
+                      ? 'bg-[#0052ff] text-white'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  <Users className="h-5 w-5" />
+                  Leads
+                </Link>
+              </li>
+            )}
+            {ROLE_PERMISSIONS[user.role].includes('view_reports') && (
+              <li>
+                <Link
+                  href="/admin/reports"
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    pathname === '/admin/reports'
+                      ? 'bg-[#0052ff] text-white'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  <BarChart3 className="h-5 w-5" />
+                  Reports
+                </Link>
+              </li>
+            )}
+            {ROLE_PERMISSIONS[user.role].includes('manage_users') && (
+              <li>
+                <Link
+                  href="/admin/users"
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    pathname === '/admin/users'
+                      ? 'bg-[#0052ff] text-white'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  <Shield className="h-5 w-5" />
+                  Users
+                </Link>
+              </li>
+            )}
+          </ul>
+        </nav>
+        <div className="sticky bottom-0 left-0 right-0 p-4 bg-white">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-gray-600">{user.name}</span>
+            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">{user.role}</span>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 hover:bg-red-50 hover:text-red-600 rounded-lg text-gray-700 transition-colors"
+          >
+            <LogOut className="h-5 w-5" />
+            Logout
+          </button>
+        </div>
+      </aside>
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200 px-4 py-4 flex items-center justify-between">
+          <button
+            className="md:hidden text-gray-700 hover:text-gray-900"
+            onClick={() => setIsSidebarOpen(true)}
+          >
+            <Menu className="h-6 w-6" />
+          </button>
+        </header>
+
+        <main className="flex-1 p-6 overflow-auto">{children}</main>
+      </div>
     </div>
   )
 }
