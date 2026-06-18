@@ -71,6 +71,10 @@ const isMongoObjectId = (value: unknown): value is string => {
   return typeof value === 'string' && /^[a-f0-9]{24}$/i.test(value);
 };
 
+const getEntityId = (value: { id?: string; _id?: string }): string => {
+  return value.id || value._id || '';
+};
+
 const emitLeadsUpdated = () => {
   if (typeof window === 'undefined') return;
   try {
@@ -100,7 +104,7 @@ export const setCurrentUser = (user: InstaUser | null) => {
   if (user) {
     const userData = {
       ...user,
-      id: user.id || user._id,
+      id: getEntityId(user),
       // Never store password in storage
       password: undefined,
     };
@@ -120,7 +124,7 @@ export const getCurrentAdminUser = (): InstaAdminUser | null => {
   const parsedUser = user as InstaAdminUser;
   return {
     ...parsedUser,
-    id: parsedUser.id || parsedUser._id,
+    id: getEntityId(parsedUser),
     permissions: parsedUser.permissions || ROLE_PERMISSIONS[parsedUser.role] || [],
   };
 };
@@ -132,7 +136,7 @@ export const setCurrentAdminUser = (user: InstaAdminUser | null) => {
   if (user) {
     const userData = {
       ...user,
-      id: user.id || user._id,
+      id: getEntityId(user),
       // Never store password in storage
       password: undefined,
     };

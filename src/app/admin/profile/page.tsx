@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { User, Mail, Phone, IdCard, Award } from 'lucide-react'
-import { getCurrentAdminUser, getAdminUsers, setAdminUsers, setCurrentAdminUser, InstaAdminUser } from '@/lib/storage'
+import { getCurrentAdminUser, getAdminProfile, updateAdminProfile, setCurrentAdminUser, InstaAdminUser } from '@/lib/storage'
 
 export default function AdminProfilePage() {
   const [user, setUser] = useState<InstaAdminUser | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState<Partial<InstaAdminUser>>({})
+  const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
     const currentUser = getCurrentAdminUser()
@@ -15,21 +16,45 @@ export default function AdminProfilePage() {
       setUser(currentUser)
       setFormData(currentUser)
     }
+
+    ;(async () => {
+      try {
+        const profile = await getAdminProfile()
+        const normalizedProfile = {
+          ...profile,
+          id: profile?.id || profile?._id,
+          permissions: Array.isArray(profile?.permissions) ? profile.permissions : [],
+        } as InstaAdminUser
+        setUser(normalizedProfile)
+        setFormData(normalizedProfile)
+        setCurrentAdminUser(normalizedProfile)
+      } catch {
+        // Keep rendering the locally cached admin profile if the API request fails.
+      }
+    })()
   }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!user) return
-    const users = getAdminUsers()
-    const updatedUsers = users.map(u => u.id === user.id ? { ...u, ...formData } as InstaAdminUser : u)
-    setAdminUsers(updatedUsers)
-    const updatedUser = updatedUsers.find(u => u.id === user.id) as InstaAdminUser
-    setUser(updatedUser)
-    setCurrentAdminUser(updatedUser)
-    setIsEditing(false)
+
+    setIsSaving(true)
+    try {
+      const updatedUser = {
+        ...user,
+        ...(await updateAdminProfile(formData)),
+        id: user.id,
+      } as InstaAdminUser
+      setUser(updatedUser)
+      setFormData(updatedUser)
+      setCurrentAdminUser(updatedUser)
+      setIsEditing(false)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   if (!user) return null
@@ -67,7 +92,7 @@ export default function AdminProfilePage() {
                   <input
                     type="text"
                     name="name"
-                    value={formData.name}
+                    value={formData.name || ''}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
                   />
@@ -85,7 +110,7 @@ export default function AdminProfilePage() {
                   <input
                     type="email"
                     name="email"
-                    value={formData.email}
+                    value={formData.email || ''}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
                   />
@@ -103,7 +128,7 @@ export default function AdminProfilePage() {
                   <input
                     type="tel"
                     name="phone"
-                    value={formData.phone}
+                    value={formData.phone || ''}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
                   />
@@ -123,7 +148,7 @@ export default function AdminProfilePage() {
                   <input
                     type="text"
                     name="employeeId"
-                    value={formData.employeeId}
+                    value={formData.employeeId || ''}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
                   />
@@ -140,7 +165,7 @@ export default function AdminProfilePage() {
                 {isEditing ? (
                   <select
                     name="band"
-                    value={formData.band}
+                    value={formData.band || 'A'}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
                   >
@@ -176,9 +201,10 @@ export default function AdminProfilePage() {
             <div className="mt-6">
               <button
                 onClick={handleSave}
+                disabled={isSaving}
                 className="w-full md:w-auto px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
-                Save Changes
+                {isSaving ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           )}

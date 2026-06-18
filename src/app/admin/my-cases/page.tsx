@@ -2,49 +2,102 @@
 
 import { useState, useEffect } from 'react'
 import { FileText, User, Calendar, Check, ArrowRight } from 'lucide-react'
-import { getCases, setCases, getCurrentAdminUser, getAdminUsers, InstaCase, InstaAdminUser } from '@/lib/storage'
+import { getCases, updateCase, getCurrentAdminUser, getAdminUsers, InstaCase, InstaAdminUser } from '@/lib/storage'
+
+const getId = (value: any): string => {
+  if (!value) return ''
+  if (typeof value === 'string') return value
+  if (typeof value === 'object') return (value.id || value._id || '').toString()
+  return ''
+}
+
+const normalizeCases = (data: any): InstaCase[] => {
+  if (!Array.isArray(data)) return []
+  return data.map((c: any) => ({
+    ...c,
+    id: getId(c?.id || c?._id),
+    assignedTo: c?.assignedTo,
+    assignedBy: c?.assignedBy,
+    createdAt: c?.createdAt ? new Date(c.createdAt).toISOString() : new Date().toISOString(),
+    updatedAt: c?.updatedAt ? new Date(c.updatedAt).toISOString() : new Date().toISOString(),
+  }))
+}
+
+const normalizeAdminUsers = (data: any): InstaAdminUser[] => {
+  if (!Array.isArray(data)) return []
+  return data.map((u: any) => ({
+    ...u,
+    id: getId(u?.id || u?._id),
+    permissions: Array.isArray(u?.permissions) ? u.permissions : [],
+  }))
+}
 
 export default function MyCasesPage() {
   const [cases, setCasesState] = useState<InstaCase[]>([])
+  const [adminUsers, setAdminUsersState] = useState<InstaAdminUser[]>([])
   const [currentUser, setCurrentUser] = useState<InstaAdminUser | null>(null)
   const [selectedCase, setSelectedCase] = useState<InstaCase | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [resolution, setResolution] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+
+  const refreshCases = async (userId: string) => {
+    const data = await getCases()
+    const normalizedCases = normalizeCases(data).filter((c) => getId(c.assignedTo) === userId)
+    setCasesState(normalizedCases)
+  }
 
   useEffect(() => {
     const user = getCurrentAdminUser()
-    if (user) {
-      setCurrentUser(user)
-      setCasesState(getCases().filter(c => c.assignedTo === user.id))
+    if (!user) {
+      setIsLoading(false)
+      return
     }
+
+    setCurrentUser(user)
+
+    ;(async () => {
+      try {
+        const [casesData, usersData] = await Promise.all([getCases(), getAdminUsers()])
+        setCasesState(
+          normalizeCases(casesData).filter((c) => getId(c.assignedTo) === user.id)
+        )
+        setAdminUsersState(normalizeAdminUsers(usersData))
+      } finally {
+        setIsLoading(false)
+      }
+    })()
   }, [])
 
-  const handleUpdateStatus = (caseId: string, status: InstaCase['status']) => {
-    const updatedCases = getCases().map(c => 
-      c.id === caseId ? { ...c, status, updatedAt: new Date().toISOString() } : c
-    )
-    setCases(updatedCases)
-    setCasesState(updatedCases.filter(c => c.assignedTo === currentUser?.id))
+  const handleUpdateStatus = async (caseId: string, status: InstaCase['status']) => {
+    if (!currentUser) return
+
+    await updateCase(caseId, {
+      status,
+      updatedAt: new Date().toISOString(),
+    })
+    await refreshCases(currentUser.id)
   }
 
-  const handleAddResolution = () => {
+  const handleAddResolution = async () => {
     if (!selectedCase) return
-    const updatedCases = getCases().map(c => 
-      c.id === selectedCase.id ? { 
-        ...c, 
-        resolution, 
-        status: 'resolved', 
-        updatedAt: new Date().toISOString() 
-      } : c
-    )
-    setCases(updatedCases)
-    setCasesState(updatedCases.filter(c => c.assignedTo === currentUser?.id))
+    if (!currentUser) return
+
+    await updateCase(selectedCase.id, {
+      resolution,
+      status: 'resolved',
+      updatedAt: new Date().toISOString(),
+    })
+    await refreshCases(currentUser.id)
     setIsModalOpen(false)
     setResolution('')
     setSelectedCase(null)
   }
 
-  const getAssignedByUser = (id: string) => getAdminUsers().find(u => u.id === id)
+  const getAssignedByUser = (id: any) => {
+    const assignedById = getId(id)
+    return adminUsers.find((u) => u.id === assignedById)
+  }
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -72,7 +125,11 @@ export default function MyCasesPage() {
       </div>
 
       <div className="space-y-4">
-        {cases.length === 0 ? (
+        {isLoading ? (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+            <p className="text-gray-500">Loading cases...</p>
+          </div>
+        ) : cases.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
             <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
             <p className="text-gray-500">No cases assigned to you</p>

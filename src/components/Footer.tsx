@@ -57,7 +57,7 @@ export default function Footer() {
         {/* Bottom Section */}
         <div className="mt-12 pt-8 border-t border-[#e5e7eb] flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-[#6b7280] text-sm">
-            © 2024 Kashless. All rights reserved.
+            © 2026 Kashless. All rights reserved.
           </p>
           <div className="flex gap-4">
             <a href="#" className="text-[#6b7280] hover:text-[#0052ff] transition-colors">
