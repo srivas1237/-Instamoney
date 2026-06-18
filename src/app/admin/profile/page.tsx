@@ -162,7 +162,7 @@ export default function AdminProfilePage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Permissions</label>
                 <div className="flex flex-wrap gap-1">
-                  {user.permissions.map(perm => (
+                  {(user.permissions || []).map(perm => (
                     <span key={perm} className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">
                       {perm.replace('_', ' ')}
                     </span>

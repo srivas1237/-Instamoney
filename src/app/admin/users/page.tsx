@@ -36,7 +36,7 @@ export default function UsersPage() {
   }, [])
 
   // Check if user has permission to manage users
-  if (!user || !user.permissions.includes('manage_users')) {
+  if (!user || !(user.permissions || []).includes('manage_users')) {
     return (
       <div className="text-center py-12">
         <h2 className="text-xl font-bold text-gray-800">Access Denied</h2>

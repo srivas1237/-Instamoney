@@ -74,7 +74,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             Dashboard
           </Link>
 
-          {user?.permissions.includes('view_leads') && (
+          {(user?.permissions || []).includes('view_leads') && (
             <Link
               href="/admin/leads"
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
@@ -119,7 +119,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </Link>
           )}
 
-          {user?.permissions.includes('view_reports') && (
+          {(user?.permissions || []).includes('view_reports') && (
             <Link
               href="/admin/reports"
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
@@ -134,7 +134,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </Link>
           )}
 
-          {user?.permissions.includes('manage_users') && (
+          {(user?.permissions || []).includes('manage_users') && (
             <Link
               href="/admin/users"
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${

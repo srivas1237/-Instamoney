@@ -134,7 +134,13 @@ export const setAdminUsers = (users: InstaAdminUser[]) => {
 
 export const getCurrentAdminUser = (): InstaAdminUser | null => {
   const user = localStorage.getItem('admin_user');
-  return user ? JSON.parse(user) : null;
+  if (!user) return null;
+  const parsedUser = JSON.parse(user);
+  // Add permissions if missing (backward compatibility)
+  return {
+    ...parsedUser,
+    permissions: parsedUser.permissions || ROLE_PERMISSIONS[parsedUser.role] || [],
+  };
 };
 
 export const setCurrentAdminUser = (user: InstaAdminUser | null) => {
