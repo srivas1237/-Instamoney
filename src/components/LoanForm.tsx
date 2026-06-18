@@ -1,9 +1,49 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 interface LoanFormProps {
   defaultLoanType?: string
+}
+
+// Application stages for tracking
+export type ApplicationStage = 
+  | 'submitted'
+  | 'document_verification'
+  | 'credit_check'
+  | 'approval'
+  | 'sanctioned'
+  | 'disbursed'
+  | 'rejected'
+
+export interface RepaymentScheduleItem {
+  id: number
+  dueDate: string
+  amount: number
+  status: 'paid' | 'pending' | 'overdue'
+  paymentDate?: string
+}
+
+export interface LoanApplication {
+  id: number
+  userId: string
+  fullName: string
+  mobileNumber: string
+  email: string
+  city: string
+  loanType: string
+  monthlyIncome: string
+  employmentType: string
+  loanAmount: string
+  status: string
+  stage: ApplicationStage
+  createdAt: string
+  approvedAmount?: number
+  interestRate?: number
+  tenureMonths?: number
+  emiAmount?: number
+  repaymentSchedule?: RepaymentScheduleItem[]
 }
 
 export default function LoanForm({ defaultLoanType }: LoanFormProps) {
@@ -17,22 +57,54 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
     employmentType: '',
     loanAmount: '',
   })
+  const [currentUser, setCurrentUser] = useState<any>(null)
+  const router = useRouter()
+
+  useEffect(() => {
+    const user = localStorage.getItem('insta_user')
+    if (user) setCurrentUser(JSON.parse(user))
+  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    // Save lead to localStorage
-    const newLead = {
-      id: Date.now(),
-      ...formData,
-      status: 'new',
-      createdAt: new Date().toISOString()
+    // If no user logged in, redirect to login first
+    if (!currentUser) {
+      alert('Please login to apply for a loan!')
+      router.push('/user/login')
+      return
     }
     
-    const existingLeads = JSON.parse(localStorage.getItem('loan_leads') || '[]')
-    localStorage.setItem('loan_leads', JSON.stringify([newLead, ...existingLeads]))
+    // Create a more detailed loan application with stages
+    const newApplication: LoanApplication = {
+      id: Date.now(),
+      userId: currentUser.id,
+      ...formData,
+      status: 'new',
+      stage: 'submitted',
+      createdAt: new Date().toISOString(),
+    }
     
-    alert('Thank you for your application! We will contact you soon.')
+    // Save to both loan_leads and user's applications
+    const existingLeads = JSON.parse(localStorage.getItem('loan_leads') || '[]')
+    localStorage.setItem('loan_leads', JSON.stringify([newApplication, ...existingLeads]))
+    
+    const userApplications = JSON.parse(localStorage.getItem(`user_${currentUser.id}_applications`) || '[]')
+    localStorage.setItem(`user_${currentUser.id}_applications`, JSON.stringify([newApplication, ...userApplications]))
+    
+    // Add a notification for user
+    const userNotifications = JSON.parse(localStorage.getItem(`user_${currentUser.id}_notifications`) || '[]')
+    const newNotification = {
+      id: Date.now(),
+      title: 'Application Submitted!',
+      message: `Your ${formData.loanType} loan application has been submitted successfully.`,
+      type: 'success',
+      read: false,
+      createdAt: new Date().toISOString()
+    }
+    localStorage.setItem(`user_${currentUser.id}_notifications`, JSON.stringify([newNotification, ...userNotifications]))
+    
+    alert('Thank you for your application! We will contact you soon. You can track your application from your dashboard.')
     setFormData({
       fullName: '',
       mobileNumber: '',

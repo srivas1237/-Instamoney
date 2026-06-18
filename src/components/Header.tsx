@@ -1,8 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
-import { Menu, X, ChevronRight } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Menu, X, ChevronRight, User } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
 
 const loanProducts = [
   { name: 'Personal Loan', href: '/personal-loan' },
@@ -20,6 +21,22 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
+  const [currentUser, setCurrentUser] = useState<any>(null)
+  const pathname = usePathname()
+  const router = useRouter()
+
+  useEffect(() => {
+    const user = localStorage.getItem('insta_user')
+    if (user) setCurrentUser(JSON.parse(user))
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem('insta_user')
+    setCurrentUser(null)
+    setIsUserDropdownOpen(false)
+    router.push('/')
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-[#e5e7eb]">
@@ -72,12 +89,57 @@ export default function Header() {
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
-            <Link
-              href="/contact-us"
-              className="bg-[#0052ff] text-white px-6 py-2.5 rounded-full font-semibold hover:bg-[#003ecf] transition-all"
-            >
-              Apply Now
-            </Link>
+            {currentUser ? (
+              <div className="relative">
+                <button
+                  onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                  className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full"
+                >
+                  <User className="h-5 w-5 text-gray-700" />
+                  <span className="font-medium text-gray-800">{currentUser.name}</span>
+                </button>
+                {isUserDropdownOpen && (
+                  <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-[#e5e7eb] rounded-xl shadow-xl py-3 z-50">
+                    <Link
+                      href="/user/dashboard"
+                      className="block px-6 py-2 text-gray-800 hover:bg-gray-100"
+                      onClick={() => setIsUserDropdownOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
+                    <Link
+                      href="/user/profile"
+                      className="block px-6 py-2 text-gray-800 hover:bg-gray-100"
+                      onClick={() => setIsUserDropdownOpen(false)}
+                    >
+                      Profile
+                    </Link>
+                    <hr className="my-2 border-gray-200" />
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-6 py-2 text-red-600 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link
+                  href="/user/login"
+                  className="text-[#050a14] hover:text-[#0052ff] font-medium"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/contact-us"
+                  className="bg-[#0052ff] text-white px-6 py-2.5 rounded-full font-semibold hover:bg-[#003ecf] transition-all"
+                >
+                  Apply Now
+                </Link>
+              </>
+            )}
           </div>
 
           <button
@@ -134,6 +196,7 @@ export default function Header() {
             >
               EMI Calculator
             </Link>
+
             <Link
               href="/about-us"
               className="block text-lg font-medium text-[#050a14] py-2"
@@ -148,6 +211,40 @@ export default function Header() {
             >
               Contact Us
             </Link>
+            
+            {currentUser ? (
+              <>
+                <Link
+                  href="/user/dashboard"
+                  className="block text-lg font-medium text-[#050a14] py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/user/profile"
+                  className="block text-lg font-medium text-[#050a14] py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Profile
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left text-lg font-medium text-red-600 py-2"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/user/login"
+                className="block text-lg font-medium text-[#050a14] py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Login
+              </Link>
+            )}
+
             <Link
               href="/contact-us"
               className="block w-full text-center bg-[#0052ff] text-white px-6 py-3 rounded-full font-semibold"
