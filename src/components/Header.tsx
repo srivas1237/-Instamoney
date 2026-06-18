@@ -22,20 +22,35 @@ export default function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
+  const [isAdminDropdownOpen, setIsAdminDropdownOpen] = useState(false)
   const [currentUser, setCurrentUser] = useState<any>(null)
+  const [adminUser, setAdminUser] = useState<any>(null)
   const pathname = usePathname()
   const router = useRouter()
+  
+  const isAdminRoute = pathname.startsWith('/admin')
+  const isUserRoute = pathname.startsWith('/user')
 
   useEffect(() => {
     const user = localStorage.getItem('insta_user')
     if (user) setCurrentUser(JSON.parse(user))
+    
+    const admin = localStorage.getItem('admin_user')
+    if (admin) setAdminUser(JSON.parse(admin))
   }, [])
 
-  const handleLogout = () => {
+  const handleUserLogout = () => {
     localStorage.removeItem('insta_user')
     setCurrentUser(null)
     setIsUserDropdownOpen(false)
     router.push('/')
+  }
+
+  const handleAdminLogout = () => {
+    localStorage.removeItem('admin_user')
+    setAdminUser(null)
+    setIsAdminDropdownOpen(false)
+    router.push('/admin/login')
   }
 
   return (
@@ -50,46 +65,76 @@ export default function Header() {
             />
           </Link>
 
-          <nav className="hidden md:flex items-center gap-8">
-            <Link href="/" className="text-[#050a14] hover:text-[#0052ff] font-medium transition-colors">
-              Home
-            </Link>
-            <div className="relative">
-              <button
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-2 text-[#050a14] hover:text-[#0052ff] font-medium transition-colors"
-              >
-                Loan Products
-                <ChevronRight className={`h-4 w-4 transition-transform ${isDropdownOpen ? 'rotate-90' : ''}`} />
-              </button>
-              {isDropdownOpen && (
-                <div className="absolute top-full left-0 mt-2 w-72 bg-white border border-[#e5e7eb] rounded-2xl shadow-xl py-3 z-50">
-                  {loanProducts.map((product) => (
-                    <Link
-                      key={product.href}
-                      href={product.href}
-                      className="block px-6 py-3 text-[#050a14] hover:text-[#0052ff] hover:bg-[#f9fafb] transition-all"
-                      onClick={() => setIsDropdownOpen(false)}
-                    >
-                      {product.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-            <Link href="/emi-calculator" className="text-[#050a14] hover:text-[#0052ff] font-medium transition-colors">
-              EMI Calculator
-            </Link>
-            <Link href="/about-us" className="text-[#050a14] hover:text-[#0052ff] font-medium transition-colors">
-              About Us
-            </Link>
-            <Link href="/contact-us" className="text-[#050a14] hover:text-[#0052ff] font-medium transition-colors">
-              Contact Us
-            </Link>
-          </nav>
+          {!isAdminRoute && (
+            <nav className="hidden md:flex items-center gap-8">
+              <Link href="/" className="text-[#050a14] hover:text-[#0052ff] font-medium transition-colors">
+                Home
+              </Link>
+              <div className="relative">
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center gap-2 text-[#050a14] hover:text-[#0052ff] font-medium transition-colors"
+                >
+                  Loan Products
+                  <ChevronRight className={`h-4 w-4 transition-transform ${isDropdownOpen ? 'rotate-90' : ''}`} />
+                </button>
+                {isDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-72 bg-white border border-[#e5e7eb] rounded-2xl shadow-xl py-3 z-50">
+                    {loanProducts.map((product) => (
+                      <Link
+                        key={product.href}
+                        href={product.href}
+                        className="block px-6 py-3 text-[#050a14] hover:text-[#0052ff] hover:bg-[#f9fafb] transition-all"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        {product.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <Link href="/emi-calculator" className="text-[#050a14] hover:text-[#0052ff] font-medium transition-colors">
+                EMI Calculator
+              </Link>
+              <Link href="/about-us" className="text-[#050a14] hover:text-[#0052ff] font-medium transition-colors">
+                About Us
+              </Link>
+              <Link href="/contact-us" className="text-[#050a14] hover:text-[#0052ff] font-medium transition-colors">
+                Contact Us
+              </Link>
+            </nav>
+          )}
 
           <div className="hidden md:flex items-center gap-4">
-            {currentUser ? (
+            {isAdminRoute && adminUser ? (
+              <div className="relative">
+                <button
+                  onClick={() => setIsAdminDropdownOpen(!isAdminDropdownOpen)}
+                  className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full"
+                >
+                  <User className="h-5 w-5 text-gray-700" />
+                  <span className="font-medium text-gray-800">{adminUser.name}</span>
+                </button>
+                {isAdminDropdownOpen && (
+                  <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-[#e5e7eb] rounded-xl shadow-xl py-3 z-50">
+                    <Link
+                      href="/admin"
+                      className="block px-6 py-2 text-gray-800 hover:bg-gray-100"
+                      onClick={() => setIsAdminDropdownOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
+                    <hr className="my-2 border-gray-200" />
+                    <button
+                      onClick={handleAdminLogout}
+                      className="block w-full text-left px-6 py-2 text-red-600 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : currentUser ? (
               <div className="relative">
                 <button
                   onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
@@ -116,7 +161,7 @@ export default function Header() {
                     </Link>
                     <hr className="my-2 border-gray-200" />
                     <button
-                      onClick={handleLogout}
+                      onClick={handleUserLogout}
                       className="block w-full text-left px-6 py-2 text-red-600 hover:bg-gray-100"
                     >
                       Logout
@@ -124,7 +169,7 @@ export default function Header() {
                   </div>
                 )}
               </div>
-            ) : (
+            ) : !isAdminRoute ? (
               <>
                 <Link
                   href="/user/login"
@@ -139,7 +184,7 @@ export default function Header() {
                   Apply Now
                 </Link>
               </>
-            )}
+            ) : null}
           </div>
 
           <button
@@ -154,65 +199,85 @@ export default function Header() {
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-[#e5e7eb]">
           <div className="px-4 py-6 space-y-4">
-            <Link
-              href="/"
-              className="block text-lg font-medium text-[#050a14] py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Home
-            </Link>
+            {!isAdminRoute && (
+              <>
+                <Link
+                  href="/"
+                  className="block text-lg font-medium text-[#050a14] py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Home
+                </Link>
 
-            <div className="space-y-2">
-              <button
-                onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
-                className="w-full flex items-center justify-between text-lg font-medium text-[#050a14] py-2"
-              >
-                <span>Loan Products</span>
-                <ChevronRight className={`h-5 w-5 transition-transform ${isMobileDropdownOpen ? 'rotate-90' : ''}`} />
-              </button>
-              {isMobileDropdownOpen && (
-                <div className="pl-4 space-y-1 border-l border-[#e5e7eb]">
-                  {loanProducts.map((product) => (
-                    <Link
-                      key={product.href}
-                      href={product.href}
-                      className="block px-4 py-3 text-[#6b7280] hover:text-[#0052ff] hover:bg-[#f9fafb] rounded-xl"
-                      onClick={() => {
-                        setIsMenuOpen(false)
-                        setIsMobileDropdownOpen(false)
-                      }}
-                    >
-                      {product.name}
-                    </Link>
-                  ))}
+                <div className="space-y-2">
+                  <button
+                    onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
+                    className="w-full flex items-center justify-between text-lg font-medium text-[#050a14] py-2"
+                  >
+                    <span>Loan Products</span>
+                    <ChevronRight className={`h-5 w-5 transition-transform ${isMobileDropdownOpen ? 'rotate-90' : ''}`} />
+                  </button>
+                  {isMobileDropdownOpen && (
+                    <div className="pl-4 space-y-1 border-l border-[#e5e7eb]">
+                      {loanProducts.map((product) => (
+                        <Link
+                          key={product.href}
+                          href={product.href}
+                          className="block px-4 py-3 text-[#6b7280] hover:text-[#0052ff] hover:bg-[#f9fafb] rounded-xl"
+                          onClick={() => {
+                            setIsMenuOpen(false)
+                            setIsMobileDropdownOpen(false)
+                          }}
+                        >
+                          {product.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
 
-            <Link
-              href="/emi-calculator"
-              className="block text-lg font-medium text-[#050a14] py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              EMI Calculator
-            </Link>
+                <Link
+                  href="/emi-calculator"
+                  className="block text-lg font-medium text-[#050a14] py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  EMI Calculator
+                </Link>
 
-            <Link
-              href="/about-us"
-              className="block text-lg font-medium text-[#050a14] py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              About Us
-            </Link>
-            <Link
-              href="/contact-us"
-              className="block text-lg font-medium text-[#050a14] py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Contact Us
-            </Link>
+                <Link
+                  href="/about-us"
+                  className="block text-lg font-medium text-[#050a14] py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  About Us
+                </Link>
+                <Link
+                  href="/contact-us"
+                  className="block text-lg font-medium text-[#050a14] py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Contact Us
+                </Link>
+              </>
+            )}
             
-            {currentUser ? (
+            {isAdminRoute && adminUser ? (
+              <>
+                <Link
+                  href="/admin"
+                  className="block text-lg font-medium text-[#050a14] py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={handleAdminLogout}
+                  className="block w-full text-left text-lg font-medium text-red-600 py-2"
+                >
+                  Logout
+                </button>
+              </>
+            ) : currentUser ? (
               <>
                 <Link
                   href="/user/dashboard"
@@ -229,13 +294,13 @@ export default function Header() {
                   Profile
                 </Link>
                 <button
-                  onClick={handleLogout}
+                  onClick={handleUserLogout}
                   className="block w-full text-left text-lg font-medium text-red-600 py-2"
                 >
                   Logout
                 </button>
               </>
-            ) : (
+            ) : !isAdminRoute ? (
               <Link
                 href="/user/login"
                 className="block text-lg font-medium text-[#050a14] py-2"
@@ -243,15 +308,17 @@ export default function Header() {
               >
                 Login
               </Link>
-            )}
+            ) : null}
 
-            <Link
-              href="/contact-us"
-              className="block w-full text-center bg-[#0052ff] text-white px-6 py-3 rounded-full font-semibold"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Apply Now
-            </Link>
+            {!isAdminRoute && !currentUser && (
+              <Link
+                href="/contact-us"
+                className="block w-full text-center bg-[#0052ff] text-white px-6 py-3 rounded-full font-semibold"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Apply Now
+              </Link>
+            )}
           </div>
         </div>
       )}
