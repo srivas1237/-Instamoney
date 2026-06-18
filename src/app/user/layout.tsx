@@ -53,100 +53,99 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Mobile sidebar overlay */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        <div className="flex items-center justify-between p-4">
-          <Link href="/" className="flex items-center gap-2">
-            <img src="/instamoney-logo.png" alt="InstaMoney" className="h-10" />
-          </Link>
-          <button
-            className="md:hidden text-gray-500 hover:text-gray-700"
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="flex flex-1 overflow-hidden">
+        {/* Mobile sidebar overlay */}
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
             onClick={() => setIsSidebarOpen(false)}
-          >
-            <X className="h-6 w-6" />
-          </button>
-        </div>
+          />
+        )}
 
-        <nav className="p-4 space-y-2">
-          {navItems.map((item) => {
-            const Icon = item.icon
-            const isActive = pathname === item.href
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  isActive
-                    ? 'bg-[#0052ff] text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <Icon className="h-5 w-5" />
-                <span className="font-medium">{item.name}</span>
+        {/* Sidebar */}
+        <aside
+          className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:h-auto flex flex-col ${
+            isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          <div className="flex items-center justify-end p-4">
+            <button
+              className="md:hidden text-gray-500 hover:text-gray-700"
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <X className="h-6 w-6" />
+            </button>
+          </div>
+
+          <nav className="p-4 space-y-2 flex-1 overflow-y-auto">
+            {navItems.map((item) => {
+              const Icon = item.icon
+              const isActive = pathname === item.href
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    isActive
+                      ? 'bg-[#0052ff] text-white'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="font-medium">{item.name}</span>
+                </Link>
+              )
+            })}
+          </nav>
+
+          <div className="p-4 border-t border-gray-100 flex-shrink-0">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="h-10 w-10 bg-[#0052ff] rounded-full flex items-center justify-center text-white font-bold">
+                {currentUser?.name?.charAt(0) || 'U'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {currentUser?.name}
+                </p>
+                <p className="text-xs text-gray-500 truncate">
+                  {currentUser?.email}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
+            >
+              <LogOut className="h-5 w-5" />
+              <span className="font-medium">Logout</span>
+            </button>
+          </div>
+        </aside>
+
+        {/* Main content */}
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+          {/* Header */}
+          <header className="bg-white border-b border-gray-200 px-4 py-4 flex items-center justify-between flex-shrink-0">
+            <button
+              className="md:hidden text-gray-700 hover:text-gray-900"
+              onClick={() => setIsSidebarOpen(true)}
+            >
+              <Menu className="h-6 w-6" />
+            </button>
+            <div className="flex-1" />
+            <div className="flex items-center gap-4">
+              <Link href="/user/notifications" className="relative p-2 text-gray-500 hover:text-gray-700">
+                <Bell className="h-6 w-6" />
+                <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
               </Link>
-            )
-          })}
-        </nav>
+            </div>
+          </header>
 
-        <div className="sticky bottom-0 left-0 right-0 p-4 bg-white">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="h-10 w-10 bg-[#0052ff] rounded-full flex items-center justify-center text-white font-bold">
-              {currentUser?.name?.charAt(0) || 'U'}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
-                {currentUser?.name}
-              </p>
-              <p className="text-xs text-gray-500 truncate">
-                {currentUser?.email}
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
-          >
-            <LogOut className="h-5 w-5" />
-            <span className="font-medium">Logout</span>
-          </button>
+          {/* Page content */}
+          <main className="flex-1 p-6 overflow-auto">{children}</main>
         </div>
-      </aside>
-
-      {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-4 py-4 flex items-center justify-between">
-          <button
-            className="md:hidden text-gray-700 hover:text-gray-900"
-            onClick={() => setIsSidebarOpen(true)}
-          >
-            <Menu className="h-6 w-6" />
-          </button>
-          <div className="flex-1" />
-          <div className="flex items-center gap-4">
-            <Link href="/user/notifications" className="relative p-2 text-gray-500 hover:text-gray-700">
-              <Bell className="h-6 w-6" />
-              <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
-            </Link>
-          </div>
-        </header>
-
-        {/* Page content */}
-        <main className="flex-1 p-6 overflow-auto">{children}</main>
       </div>
     </div>
   )

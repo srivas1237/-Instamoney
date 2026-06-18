@@ -5,13 +5,6 @@ import Header from './Header'
 import Footer from './Footer'
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname()
-  const isUserOrAdminRoute = pathname.startsWith('/user') || pathname.startsWith('/admin')
-
-  if (isUserOrAdminRoute) {
-    return <>{children}</>
-  }
-
   return (
     <>
       <Header />
