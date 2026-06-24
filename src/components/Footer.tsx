@@ -1,72 +1,63 @@
 import Link from 'next/link'
 import { ExternalLink } from 'lucide-react'
+import BrandMark from './BrandMark'
 
 export default function Footer() {
   return (
-    <footer className="bg-white border-t border-[#e5e7eb]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Brand Section */}
+    <footer className="border-t border-white/10 bg-black">
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <img 
-                src="/kashless.png" 
-                alt="Kashless Logo" 
-                className="h-16 sm:h-20"
-              />
-            </Link>
-            <p className="text-[#6b7280] text-sm">
-              Fast & Hassle-Free Loans for Every Need
+            <BrandMark className="mb-5" />
+            <p className="max-w-xs text-sm text-[#737780]">
+              Kashless helps users apply, track, and manage online loan journeys with a clean, fast, implementation-ready interface.
             </p>
           </div>
 
-          {/* Quick Links */}
           <div>
-            <h4 className="text-[#050a14] font-semibold mb-4">Quick Links</h4>
+            <h4 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-white">Quick Links</h4>
             <ul className="space-y-2">
-              <li><Link href="/about-us" className="text-[#6b7280] hover:text-[#0052ff] transition-colors text-sm">About Us</Link></li>
-              <li><Link href="/contact-us" className="text-[#6b7280] hover:text-[#0052ff] transition-colors text-sm">Contact Us</Link></li>
-              <li><Link href="/personal-loan" className="text-[#6b7280] hover:text-[#0052ff] transition-colors text-sm">Personal Loan</Link></li>
-              <li><Link href="/home-loan" className="text-[#6b7280] hover:text-[#0052ff] transition-colors text-sm">Home Loan</Link></li>
+              <li><Link href="/about-us" className="text-sm text-[#737780] hover:text-[#ff825c]">About Us</Link></li>
+              <li><Link href="/contact-us" className="text-sm text-[#737780] hover:text-[#ff825c]">Contact Us</Link></li>
+              <li><Link href="/user/login" className="text-sm text-[#737780] hover:text-[#ff825c]">Customer Login</Link></li>
+              <li><Link href="/admin/login" className="text-sm text-[#737780] hover:text-[#ff825c]">Operator Login</Link></li>
             </ul>
           </div>
 
-          {/* More Loans */}
           <div>
-            <h4 className="text-[#050a14] font-semibold mb-4">Loans</h4>
+            <h4 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-white">Products</h4>
             <ul className="space-y-2">
-              <li><Link href="/loan-against-property" className="text-[#6b7280] hover:text-[#0052ff] transition-colors text-sm">Loan Against Property</Link></li>
-              <li><Link href="/car-loan" className="text-[#6b7280] hover:text-[#0052ff] transition-colors text-sm">Car Loan</Link></li>
-              <li><Link href="/two-wheeler-loan" className="text-[#6b7280] hover:text-[#0052ff] transition-colors text-sm">Two Wheeler Loan</Link></li>
-              <li><Link href="/invoice-finance" className="text-[#6b7280] hover:text-[#0052ff] transition-colors text-sm">Invoice Finance</Link></li>
+              <li><Link href="/personal-loan" className="text-sm text-[#737780] hover:text-[#ff825c]">Personal Loan</Link></li>
+              <li><Link href="/home-loan" className="text-sm text-[#737780] hover:text-[#ff825c]">Home Loan</Link></li>
+              <li><Link href="/loan-against-property" className="text-sm text-[#737780] hover:text-[#ff825c]">Loan Against Property</Link></li>
+              <li><Link href="/emi-calculator" className="text-sm text-[#737780] hover:text-[#ff825c]">EMI Calculator</Link></li>
             </ul>
           </div>
 
-          {/* Legal */}
           <div>
-            <h4 className="text-[#050a14] font-semibold mb-4">Legal</h4>
+            <h4 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-white">Compliance</h4>
             <ul className="space-y-2">
-              <li><Link href="/privacy-policy" className="text-[#6b7280] hover:text-[#0052ff] transition-colors text-sm">Privacy Policy</Link></li>
-              <li><Link href="/terms-of-service" className="text-[#6b7280] hover:text-[#0052ff] transition-colors text-sm">Terms of Service</Link></li>
-              <li><Link href="/disclaimer" className="text-[#6b7280] hover:text-[#0052ff] transition-colors text-sm">Disclaimer</Link></li>
-              <li><Link href="/grievance-redressal" className="text-[#6b7280] hover:text-[#0052ff] transition-colors text-sm">Grievance Redressal</Link></li>
+              <li><Link href="/privacy-policy" className="text-sm text-[#737780] hover:text-[#ff825c]">Privacy Policy</Link></li>
+              <li><Link href="/terms-of-service" className="text-sm text-[#737780] hover:text-[#ff825c]">Terms of Service</Link></li>
+              <li><Link href="/refund-policy" className="text-sm text-[#737780] hover:text-[#ff825c]">Refund Policy</Link></li>
+              <li><Link href="/disclaimer" className="text-sm text-[#737780] hover:text-[#ff825c]">Disclaimer</Link></li>
+              <li><Link href="/grievance-redressal" className="text-sm text-[#737780] hover:text-[#ff825c]">Grievance Redressal</Link></li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom Section */}
-        <div className="mt-12 pt-8 border-t border-[#e5e7eb] flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-[#6b7280] text-sm">
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 md:flex-row">
+          <p className="text-sm text-[#737780]">
             © 2026 Kashless. All rights reserved.
           </p>
           <div className="flex gap-4">
-            <a href="#" className="text-[#6b7280] hover:text-[#0052ff] transition-colors">
+            <a href="#" className="text-[#737780] hover:text-[#ff825c]">
               <ExternalLink className="h-5 w-5" />
             </a>
-            <a href="#" className="text-[#6b7280] hover:text-[#0052ff] transition-colors">
+            <a href="#" className="text-[#737780] hover:text-[#ff825c]">
               <ExternalLink className="h-5 w-5" />
             </a>
-            <a href="#" className="text-[#6b7280] hover:text-[#0052ff] transition-colors">
+            <a href="#" className="text-[#737780] hover:text-[#ff825c]">
               <ExternalLink className="h-5 w-5" />
             </a>
           </div>

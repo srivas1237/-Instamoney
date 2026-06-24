@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { getCurrentUser, setCurrentUser } from '@/lib/storage'
+import BrandMark from '@/components/BrandMark'
 
 interface User {
   id: string
@@ -82,26 +83,20 @@ export default function UserLoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl border border-gray-200">
+    <div className="flex min-h-screen items-center justify-center bg-black px-4 py-12 sm:px-6 lg:px-8">
+      <div className="tp-card w-full max-w-md space-y-8 p-8">
         <div className="text-center">
           <div className="mb-5 flex justify-center">
-            <Link href="/" className="flex items-center justify-center">
-              <img
-                src="/kashless.png"
-                alt="Kashless"
-                className="block h-20 sm:h-24 w-auto object-contain"
-              />
-            </Link>
+            <BrandMark />
           </div>
-          <h2 className="text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="text-center text-3xl font-semibold tracking-[-0.03em] text-white">
             {isLogin ? 'Sign in to your account' : 'Create a new account'}
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-[#737780]">
             {isLogin ? "Don't have an account? " : 'Already have an account? '}
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="font-medium text-[#0052ff] hover:text-[#003ecf] underline"
+              className="font-medium text-[#ff825c] underline hover:text-[#ff9473]"
             >
               {isLogin ? 'Sign up' : 'Sign in'}
             </button>
@@ -109,7 +104,7 @@ export default function UserLoginPage() {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          <div className="rounded-lg border border-[#ff825c]/35 bg-[#ff825c]/10 px-4 py-3 text-sm text-[#ff825c]">
             {error}
           </div>
         )}
@@ -127,7 +122,7 @@ export default function UserLoginPage() {
                 required
                 value={formData.name}
                 onChange={handleChange}
-                className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
+                className="tp-input block px-3 py-3"
                 placeholder="Full Name"
               />
             </div>
@@ -144,7 +139,7 @@ export default function UserLoginPage() {
               required
               value={formData.email}
               onChange={handleChange}
-              className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
+                className="tp-input block px-3 py-3"
               placeholder="Email address"
             />
           </div>
@@ -161,7 +156,7 @@ export default function UserLoginPage() {
                 required
                 value={formData.phone}
                 onChange={handleChange}
-                className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
+                className="tp-input block px-3 py-3"
                 placeholder="Phone Number"
               />
             </div>
@@ -178,7 +173,7 @@ export default function UserLoginPage() {
               required
               value={formData.password}
               onChange={handleChange}
-              className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
+                className="tp-input block px-3 py-3"
               placeholder="Password"
             />
           </div>
@@ -186,7 +181,7 @@ export default function UserLoginPage() {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-full text-white bg-[#0052ff] hover:bg-[#003ecf] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0052ff]"
+              className="tp-button-primary w-full px-4 py-3 text-sm"
             >
               {isLogin ? 'Sign In' : 'Sign Up'}
             </button>

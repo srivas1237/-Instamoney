@@ -5,8 +5,10 @@ import { useState, useEffect } from 'react'
 import { Menu, X, ChevronRight, User } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import { getCurrentUser, setCurrentUser, getCurrentAdminUser, setCurrentAdminUser, InstaUser, InstaAdminUser } from '@/lib/storage'
+import BrandMark from './BrandMark'
 
 const loanProducts = [
+  { name: 'Loan Products Overview', href: '/loan-products' },
   { name: 'Personal Loan', href: '/personal-loan' },
   { name: 'Home Loan', href: '/home-loan' },
   { name: 'Loan Against Property', href: '/loan-against-property' },
@@ -16,6 +18,8 @@ const loanProducts = [
   { name: 'Two Wheeler Loan', href: '/two-wheeler-loan' },
   { name: 'Advance Salary', href: '/advance-salary' },
   { name: 'Invoice Finance', href: '/invoice-finance' },
+  { name: 'Merchant Loan - Working Capital', href: '/loan-products#merchant-loan-working-capital' },
+  { name: 'Two Wheeler Merchant Program', href: '/two-wheeler-merchant-program' },
 ]
 
 export default function Header() {
@@ -61,37 +65,31 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-[#e5e7eb]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          <Link href="/" className="flex items-center gap-2">
-            <img 
-              src="/kashless.png" 
-              alt="Kashless Logo" 
-              className="h-20 sm:h-24"
-            />
-          </Link>
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-black/85 backdrop-blur-xl">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex min-h-[84px] items-center justify-between gap-4">
+          <BrandMark compact />
 
           {!isAdminRoute && (
-            <nav className="hidden md:flex items-center gap-8">
-              <Link href="/" className="text-[#050a14] hover:text-[#0052ff] font-medium transition-colors">
+            <nav className="hidden items-center gap-7 md:flex">
+              <Link href="/" className="text-sm font-medium text-white hover:text-[#ff825c]">
                 Home
               </Link>
               <div className="relative">
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center gap-2 text-[#050a14] hover:text-[#0052ff] font-medium transition-colors"
+                  className="flex items-center gap-2 text-sm font-medium text-white hover:text-[#ff825c]"
                 >
                   Loan Products
                   <ChevronRight className={`h-4 w-4 transition-transform ${isDropdownOpen ? 'rotate-90' : ''}`} />
                 </button>
                 {isDropdownOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-72 bg-white border border-[#e5e7eb] rounded-2xl shadow-xl py-3 z-50">
+                  <div className="absolute left-0 top-full z-50 mt-3 w-72 rounded-xl border border-white/10 bg-[#121212] p-3 shadow-2xl">
                     {loanProducts.map((product) => (
                       <Link
                         key={product.href}
                         href={product.href}
-                        className="block px-6 py-3 text-[#050a14] hover:text-[#0052ff] hover:bg-[#f9fafb] transition-all"
+                        className="block rounded-lg px-4 py-3 text-sm text-white hover:bg-white/5 hover:text-[#ff825c]"
                         onClick={() => setIsDropdownOpen(false)}
                       >
                         {product.name}
@@ -100,41 +98,41 @@ export default function Header() {
                   </div>
                 )}
               </div>
-              <Link href="/emi-calculator" className="text-[#050a14] hover:text-[#0052ff] font-medium transition-colors">
+              <Link href="/emi-calculator" className="text-sm font-medium text-white hover:text-[#ff825c]">
                 EMI Calculator
               </Link>
-              <Link href="/about-us" className="text-[#050a14] hover:text-[#0052ff] font-medium transition-colors">
+              <Link href="/about-us" className="text-sm font-medium text-white hover:text-[#ff825c]">
                 About Us
               </Link>
-              <Link href="/contact-us" className="text-[#050a14] hover:text-[#0052ff] font-medium transition-colors">
+              <Link href="/contact-us" className="text-sm font-medium text-white hover:text-[#ff825c]">
                 Contact Us
               </Link>
             </nav>
           )}
 
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden items-center gap-4 md:flex">
             {isAdminRoute && !isAdminLoginPage && adminUser ? (
               <div className="relative">
                 <button
                   onClick={() => setIsAdminDropdownOpen(!isAdminDropdownOpen)}
-                  className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full"
+                  className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white"
                 >
-                  <User className="h-5 w-5 text-gray-700" />
-                  <span className="font-medium text-gray-800">{adminUser.name}</span>
+                  <User className="h-5 w-5 text-[#ff825c]" />
+                  <span className="font-medium">{adminUser.name}</span>
                 </button>
                 {isAdminDropdownOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-[#e5e7eb] rounded-xl shadow-xl py-3 z-50">
+                  <div className="absolute right-0 top-full z-50 mt-3 w-56 rounded-xl border border-white/10 bg-[#121212] py-3 shadow-2xl">
                     <Link
                       href="/admin"
-                      className="block px-6 py-2 text-gray-800 hover:bg-gray-100"
+                      className="block px-6 py-2 text-sm text-white hover:bg-white/5"
                       onClick={() => setIsAdminDropdownOpen(false)}
                     >
                       Dashboard
                     </Link>
-                    <hr className="my-2 border-gray-200" />
+                    <hr className="my-2 border-white/10" />
                     <button
                       onClick={handleAdminLogout}
-                      className="block w-full text-left px-6 py-2 text-red-600 hover:bg-gray-100"
+                      className="block w-full px-6 py-2 text-left text-sm text-[#ff825c] hover:bg-white/5"
                     >
                       Logout
                     </button>
@@ -145,31 +143,31 @@ export default function Header() {
               <div className="relative">
                 <button
                   onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                  className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full"
+                  className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white"
                 >
-                  <User className="h-5 w-5 text-gray-700" />
-                  <span className="font-medium text-gray-800">{currentUser.name}</span>
+                  <User className="h-5 w-5 text-[#ff825c]" />
+                  <span className="font-medium">{currentUser.name}</span>
                 </button>
                 {isUserDropdownOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-[#e5e7eb] rounded-xl shadow-xl py-3 z-50">
+                  <div className="absolute right-0 top-full z-50 mt-3 w-56 rounded-xl border border-white/10 bg-[#121212] py-3 shadow-2xl">
                     <Link
                       href="/user/dashboard"
-                      className="block px-6 py-2 text-gray-800 hover:bg-gray-100"
+                      className="block px-6 py-2 text-sm text-white hover:bg-white/5"
                       onClick={() => setIsUserDropdownOpen(false)}
                     >
                       Dashboard
                     </Link>
                     <Link
                       href="/user/profile"
-                      className="block px-6 py-2 text-gray-800 hover:bg-gray-100"
+                      className="block px-6 py-2 text-sm text-white hover:bg-white/5"
                       onClick={() => setIsUserDropdownOpen(false)}
                     >
                       Profile
                     </Link>
-                    <hr className="my-2 border-gray-200" />
+                    <hr className="my-2 border-white/10" />
                     <button
                       onClick={handleUserLogout}
-                      className="block w-full text-left px-6 py-2 text-red-600 hover:bg-gray-100"
+                      className="block w-full px-6 py-2 text-left text-sm text-[#ff825c] hover:bg-white/5"
                     >
                       Logout
                     </button>
@@ -180,22 +178,22 @@ export default function Header() {
               <>
                 <Link
                   href="/user/login"
-                  className="text-[#050a14] hover:text-[#0052ff] font-medium"
+                  className="text-sm font-medium text-white hover:text-[#ff825c]"
                 >
                   Login
                 </Link>
                 <Link
                   href="/contact-us"
-                  className="bg-[#0052ff] text-white px-6 py-2.5 rounded-full font-semibold hover:bg-[#003ecf] transition-all"
+                  className="tp-button-primary px-6 py-2.5 text-sm"
                 >
-                  Apply Now
+                  Apply Online
                 </Link>
               </>
             ) : null}
           </div>
 
           <button
-            className="md:hidden text-[#050a14]"
+            className="text-white md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />}
@@ -204,13 +202,13 @@ export default function Header() {
       </div>
 
       {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-[#e5e7eb]">
+        <div className="border-t border-white/10 bg-black md:hidden">
           <div className="px-4 py-6 space-y-4">
             {!isAdminRoute && (
               <>
                 <Link
                   href="/"
-                  className="block text-lg font-medium text-[#050a14] py-2"
+                  className="block py-2 text-lg font-medium text-white"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Home
@@ -219,18 +217,18 @@ export default function Header() {
                 <div className="space-y-2">
                   <button
                     onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
-                    className="w-full flex items-center justify-between text-lg font-medium text-[#050a14] py-2"
+                    className="flex w-full items-center justify-between py-2 text-lg font-medium text-white"
                   >
                     <span>Loan Products</span>
                     <ChevronRight className={`h-5 w-5 transition-transform ${isMobileDropdownOpen ? 'rotate-90' : ''}`} />
                   </button>
                   {isMobileDropdownOpen && (
-                    <div className="pl-4 space-y-1 border-l border-[#e5e7eb]">
+                    <div className="space-y-1 border-l border-white/10 pl-4">
                       {loanProducts.map((product) => (
                         <Link
                           key={product.href}
                           href={product.href}
-                          className="block px-4 py-3 text-[#6b7280] hover:text-[#0052ff] hover:bg-[#f9fafb] rounded-xl"
+                          className="block rounded-lg px-4 py-3 text-[#737780] hover:bg-white/5 hover:text-[#ff825c]"
                           onClick={() => {
                             setIsMenuOpen(false)
                             setIsMobileDropdownOpen(false)
@@ -245,7 +243,7 @@ export default function Header() {
 
                 <Link
                   href="/emi-calculator"
-                  className="block text-lg font-medium text-[#050a14] py-2"
+                  className="block py-2 text-lg font-medium text-white"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   EMI Calculator
@@ -253,14 +251,14 @@ export default function Header() {
 
                 <Link
                   href="/about-us"
-                  className="block text-lg font-medium text-[#050a14] py-2"
+                  className="block py-2 text-lg font-medium text-white"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   About Us
                 </Link>
                 <Link
                   href="/contact-us"
-                  className="block text-lg font-medium text-[#050a14] py-2"
+                  className="block py-2 text-lg font-medium text-white"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Contact Us
@@ -272,14 +270,14 @@ export default function Header() {
               <>
                 <Link
                   href="/admin"
-                  className="block text-lg font-medium text-[#050a14] py-2"
+                  className="block py-2 text-lg font-medium text-white"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Dashboard
                 </Link>
                 <button
                   onClick={handleAdminLogout}
-                  className="block w-full text-left text-lg font-medium text-red-600 py-2"
+                  className="block w-full py-2 text-left text-lg font-medium text-[#ff825c]"
                 >
                   Logout
                 </button>
@@ -288,21 +286,21 @@ export default function Header() {
               <>
                 <Link
                   href="/user/dashboard"
-                  className="block text-lg font-medium text-[#050a14] py-2"
+                  className="block py-2 text-lg font-medium text-white"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Dashboard
                 </Link>
                 <Link
                   href="/user/profile"
-                  className="block text-lg font-medium text-[#050a14] py-2"
+                  className="block py-2 text-lg font-medium text-white"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Profile
                 </Link>
                 <button
                   onClick={handleUserLogout}
-                  className="block w-full text-left text-lg font-medium text-red-600 py-2"
+                  className="block w-full py-2 text-left text-lg font-medium text-[#ff825c]"
                 >
                   Logout
                 </button>
@@ -310,7 +308,7 @@ export default function Header() {
             ) : !isAdminRoute ? (
               <Link
                 href="/user/login"
-                className="block text-lg font-medium text-[#050a14] py-2"
+                className="block py-2 text-lg font-medium text-white"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Login
@@ -320,10 +318,10 @@ export default function Header() {
             {!isAdminRoute && !currentUser && (
               <Link
                 href="/contact-us"
-                className="block w-full text-center bg-[#0052ff] text-white px-6 py-3 rounded-full font-semibold"
+                className="tp-button-primary block w-full px-6 py-3 text-center"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Apply Now
+                Apply Online
               </Link>
             )}
           </div>
@@ -332,4 +330,3 @@ export default function Header() {
     </header>
   )
 }
-

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { adminLogin, getCurrentAdminUser } from '@/lib/storage'
+import BrandMark from '@/components/BrandMark'
 
 export default function LoginPage() {
   const [username, setUsername] = useState('')
@@ -34,29 +35,25 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+    <div className="flex min-h-screen items-center justify-center bg-black px-4">
+      <div className="tp-card w-full max-w-md p-8">
         <div className="text-center mb-6">
           <div className="mb-4 flex justify-center">
-            <img 
-              src="/kashless.png" 
-              alt="Kashless Logo" 
-              className="block h-20 sm:h-24 w-auto object-contain"
-            />
+            <BrandMark />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">Admin Portal</h1>
-          <p className="text-gray-500">Sign in to your account</p>
+          <h1 className="text-2xl font-semibold tracking-[-0.03em] text-white">Operator Portal</h1>
+          <p className="text-[#737780]">Sign in to review applications, cases, and reports</p>
         </div>
         
         {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+          <div className="mb-4 rounded-lg border border-[#ff825c]/35 bg-[#ff825c]/10 p-3 text-sm text-[#ff825c]">
             {error}
           </div>
         )}
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-medium text-white">
               Username
             </label>
             <input
@@ -64,13 +61,13 @@ export default function LoginPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="tp-input px-4 py-3"
               placeholder="Enter username"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-medium text-white">
               Password
             </label>
             <input
@@ -78,7 +75,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="tp-input px-4 py-3"
               placeholder="Enter password"
             />
           </div>
@@ -86,13 +83,13 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            className="tp-button-primary w-full py-3"
           >
             {isSubmitting ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
         
-        <div className="mt-6 text-center text-sm text-gray-500">
+        <div className="mt-6 text-center text-sm text-[#737780]">
           <p>Demo credentials:</p>
           <p className="mt-1">superadmin / SuperAdmin@123</p>
           <p>admin / Admin@123</p>

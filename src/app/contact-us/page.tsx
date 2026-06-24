@@ -3,10 +3,15 @@ import { Phone, Mail, MapPin, Clock } from 'lucide-react'
 import LoanForm from '@/components/LoanForm'
 
 const contactInfo = [
-  { icon: Phone, title: 'Phone', value: '+91 123 456 7890' },
-  { icon: Mail, title: 'Email', value: 'support@kashless.com' },
-  { icon: MapPin, title: 'Address', value: '123 Finance Street, Mumbai, India' },
-  { icon: Clock, title: 'Working Hours', value: 'Mon-Sat: 9AM - 7PM' },
+  { icon: Phone, title: 'Phone', value: '+91-8167478979' },
+  { icon: Mail, title: 'Email', value: 'care@kashless.in' },
+  {
+    icon: MapPin,
+    title: 'Address',
+    value:
+      'Kashless (A Part of WebFino Solution Private Limited), RDB Boulevard, PL K1 Block EP & GP, Sector V, Bidhan Nagar CK Market, North 24 Parganas, Salt Lake, Kolkata, West Bengal, 700019, India',
+  },
+  { icon: Clock, title: 'CIN', value: 'U62012WB2025PTC283996' },
 ]
 
 export default function ContactUsPage() {

@@ -129,70 +129,85 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
   }
 
   return (
-    <div className="bg-[#f9fafb] border border-[#e5e7eb] rounded-2xl p-6 md:p-8 shadow-xl">
-      <h3 className="text-xl md:text-2xl font-bold text-[#050a14] mb-6">Apply Now</h3>
+    <div className="tp-card p-4 sm:p-5">
+      <div className="mb-4 space-y-2.5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="max-w-[15rem]">
+            <p className="mb-2 text-xs uppercase tracking-[0.18em] text-[#ff825c]">Start Application</p>
+            <h3 className="text-[26px] font-semibold leading-[1.1] tracking-[-0.03em] text-white">
+              Apply online with Kashless
+            </h3>
+          </div>
+          <span className="rounded-full border border-[#ff825c]/30 bg-[#ff825c]/10 px-3 py-1 text-[11px] font-medium text-[#ff825c]">
+            Smart form
+          </span>
+        </div>
+        <p className="max-w-md text-sm leading-5 text-[#737780]">
+          Share a few details and continue your loan journey.
+        </p>
+      </div>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-3 min-[430px]:grid-cols-2">
           <div>
-            <label className="block text-sm font-medium text-[#6b7280] mb-2">Full Name</label>
+            <label className="mb-1.5 block text-sm font-medium text-white">Full Name</label>
             <input
               type="text"
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-xl bg-white border border-[#e5e7eb] text-[#050a14] focus:border-[#0052ff] focus:outline-none transition-all"
+              className="tp-input h-12 px-4"
               placeholder="Enter your full name"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#6b7280] mb-2">Mobile Number</label>
+            <label className="mb-1.5 block text-sm font-medium text-white">Mobile Number</label>
             <input
               type="tel"
               name="mobileNumber"
               value={formData.mobileNumber}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-xl bg-white border border-[#e5e7eb] text-[#050a14] focus:border-[#0052ff] focus:outline-none transition-all"
+              className="tp-input h-12 px-4"
               placeholder="Enter your mobile number"
             />
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-3 min-[430px]:grid-cols-2">
           <div>
-            <label className="block text-sm font-medium text-[#6b7280] mb-2">Email</label>
+            <label className="mb-1.5 block text-sm font-medium text-white">Email</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-xl bg-white border border-[#e5e7eb] text-[#050a14] focus:border-[#0052ff] focus:outline-none transition-all"
+              className="tp-input h-12 px-4"
               placeholder="Enter your email"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#6b7280] mb-2">City</label>
+            <label className="mb-1.5 block text-sm font-medium text-white">City</label>
             <input
               type="text"
               name="city"
               value={formData.city}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-xl bg-white border border-[#e5e7eb] text-[#050a14] focus:border-[#0052ff] focus:outline-none transition-all"
+              className="tp-input h-12 px-4"
               placeholder="Enter your city"
             />
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-3 min-[430px]:grid-cols-2">
           <div>
-            <label className="block text-sm font-medium text-[#6b7280] mb-2">Loan Type</label>
+            <label className="mb-1.5 block text-sm font-medium text-white">Loan Type</label>
             <select
               name="loanType"
               value={formData.loanType}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-xl bg-white border border-[#e5e7eb] text-[#050a14] focus:border-[#0052ff] focus:outline-none transition-all"
+              className="tp-select h-12 px-4 pr-10"
             >
               <option value="">Select Loan Type</option>
               <option value="personal-loan">Personal Loan</option>
@@ -207,13 +222,13 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#6b7280] mb-2">Monthly Income</label>
+            <label className="mb-1.5 block text-sm font-medium text-white">Monthly Income</label>
             <select
               name="monthlyIncome"
               value={formData.monthlyIncome}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-xl bg-white border border-[#e5e7eb] text-[#050a14] focus:border-[#0052ff] focus:outline-none transition-all"
+              className="tp-select h-12 px-4 pr-10"
             >
               <option value="">Select Monthly Income</option>
               <option value="0-15000">Below ₹15,000</option>
@@ -224,15 +239,15 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
             </select>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-3 min-[430px]:grid-cols-2">
           <div>
-            <label className="block text-sm font-medium text-[#6b7280] mb-2">Employment Type</label>
+            <label className="mb-1.5 block text-sm font-medium text-white">Employment Type</label>
             <select
               name="employmentType"
               value={formData.employmentType}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-xl bg-white border border-[#e5e7eb] text-[#050a14] focus:border-[#0052ff] focus:outline-none transition-all"
+              className="tp-select h-12 px-4 pr-10"
             >
               <option value="">Select Employment Type</option>
               <option value="salaried">Salaried</option>
@@ -242,24 +257,27 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#6b7280] mb-2">Loan Amount Required</label>
+            <label className="mb-1.5 block text-sm font-medium text-white">Loan Amount</label>
             <input
               type="number"
               name="loanAmount"
               value={formData.loanAmount}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-xl bg-white border border-[#e5e7eb] text-[#050a14] focus:border-[#0052ff] focus:outline-none transition-all"
+              className="tp-input h-12 px-4"
               placeholder="Enter loan amount"
             />
           </div>
         </div>
+        <p className="border-t border-white/10 pt-2 text-xs leading-5 text-[#737780]">
+          By submitting, you agree that Kashless may contact you regarding your application.
+        </p>
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-[#0052ff] text-white px-6 py-3.5 rounded-full font-semibold text-lg hover:bg-[#003ecf] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="tp-button-primary mt-1 w-full px-6 py-3 text-sm sm:text-base"
         >
-          {isSubmitting ? 'Submitting...' : 'Submit Application'}
+          {isSubmitting ? 'Submitting...' : 'Continue Application'}
         </button>
       </form>
     </div>

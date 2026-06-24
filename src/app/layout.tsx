@@ -3,8 +3,8 @@ import "./globals.css";
 import LayoutWrapper from "@/components/LayoutWrapper";
 
 export const metadata: Metadata = {
-  title: "Kashless - Fast & Hassle-Free Loans for Every Need",
-  description: "Personal Loan, Home Loan, LAP, Payday Loan, Vehicle Loan & Business Financing Solutions.",
+  title: "Kashless - Get a Fully Online Loan in India",
+  description: "Kashless helps users and operators manage fully online loan journeys with a fast, accessible, token-driven web experience.",
   icons: {
     icon: "/kashless.png",
     shortcut: "/kashless.png",
