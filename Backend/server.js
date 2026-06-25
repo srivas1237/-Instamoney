@@ -9,6 +9,10 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Respect the first upstream proxy (Nginx / Vercel) so rate limiting uses
+// the real client IP instead of treating every request as the proxy.
+app.set('trust proxy', 1);
+
 // ==================== SECURITY MIDDLEWARE ====================
 
 // 1. Helmet - Set security HTTP headers
@@ -31,6 +35,7 @@ const loginLimiter = rateLimit({
   message: { message: 'Too many login attempts, please try again after 2 minutes' },
   standardHeaders: true,
   legacyHeaders: false,
+  skipSuccessfulRequests: true,
 });
 
 const generalLimiter = rateLimit({
@@ -141,4 +146,3 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
 });
-
