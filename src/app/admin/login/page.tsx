@@ -28,7 +28,13 @@ export default function LoginPage() {
       await adminLogin({ username, password })
       router.push('/admin')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Invalid credentials')
+      const raw = err instanceof Error ? err.message : String(err)
+      const isBackendUnreachable =
+        raw.includes('DNS_HOSTNAME_RESOLVED_PRIVATE') ||
+        raw.includes('Failed to fetch') ||
+        raw.includes('net::ERR_FAILED') ||
+        raw.includes('This page could not be found')
+      setError(isBackendUnreachable ? 'Backend is not reachable. Please set BACKEND_ORIGIN (public backend URL) and redeploy.' : raw || 'Invalid credentials')
     } finally {
       setIsSubmitting(false)
     }
