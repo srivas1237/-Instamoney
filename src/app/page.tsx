@@ -354,7 +354,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="relative">
+            <div className="relative flex justify-center lg:justify-end">
               <LoanForm />
             </div>
           </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { getCurrentUser, createLead, InstaUser } from '@/lib/storage'
+import { getCurrentUser, createLead, InstaUser, LOAN_TYPE_OPTIONS, getLoanTypeLabel } from '@/lib/storage'
 
 interface LoanFormProps {
   defaultLoanType?: string
@@ -80,6 +80,7 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
     setIsSubmitting(true)
     
     try {
+      const loanTypeLabel = getLoanTypeLabel(formData.loanType)
       // Create lead using backend API
       const leadData = {
         name: formData.fullName,
@@ -99,7 +100,7 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
       const newNotification = {
         id: Date.now(),
         title: 'Application Submitted!',
-        message: `Your ${formData.loanType} loan application has been submitted successfully.`,
+        message: `Your ${loanTypeLabel} application has been submitted successfully.`,
         type: 'success',
         read: false,
         createdAt: new Date().toISOString()
@@ -129,12 +130,12 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
   }
 
   return (
-    <div className="tp-card p-4 sm:p-5">
-      <div className="mb-4 space-y-2.5">
+    <div className="tp-card w-full max-w-[420px] p-3 sm:p-4">
+      <div className="mb-3 space-y-2">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="max-w-[15rem]">
             <p className="mb-2 text-xs uppercase tracking-[0.18em] text-[#ff825c]">Start Application</p>
-            <h3 className="text-[26px] font-semibold leading-[1.1] tracking-[-0.03em] text-white">
+            <h3 className="text-[24px] font-semibold leading-[1.1] tracking-[-0.03em] text-white">
               Apply online with Kashless
             </h3>
           </div>
@@ -146,89 +147,85 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
           Share a few details and continue your loan journey.
         </p>
       </div>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 gap-3 min-[430px]:grid-cols-2">
+      <form onSubmit={handleSubmit} className="space-y-2.5">
+        <div className="grid grid-cols-1 gap-2 min-[430px]:grid-cols-2">
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-white">Full Name</label>
+            <label className="mb-1 block text-[13px] font-medium text-white">Full Name</label>
             <input
               type="text"
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
               required
-              className="tp-input h-12 px-4"
+              className="tp-input h-10 px-3"
               placeholder="Enter your full name"
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-white">Mobile Number</label>
+            <label className="mb-1 block text-[13px] font-medium text-white">Mobile Number</label>
             <input
               type="tel"
               name="mobileNumber"
               value={formData.mobileNumber}
               onChange={handleChange}
               required
-              className="tp-input h-12 px-4"
+              className="tp-input h-10 px-3"
               placeholder="Enter your mobile number"
             />
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-3 min-[430px]:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2 min-[430px]:grid-cols-2">
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-white">Email</label>
+            <label className="mb-1 block text-[13px] font-medium text-white">Email</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               required
-              className="tp-input h-12 px-4"
+              className="tp-input h-10 px-3"
               placeholder="Enter your email"
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-white">City</label>
+            <label className="mb-1 block text-[13px] font-medium text-white">City</label>
             <input
               type="text"
               name="city"
               value={formData.city}
               onChange={handleChange}
               required
-              className="tp-input h-12 px-4"
+              className="tp-input h-10 px-3"
               placeholder="Enter your city"
             />
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-3 min-[430px]:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2 min-[430px]:grid-cols-2">
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-white">Loan Type</label>
+            <label className="mb-1 block text-[13px] font-medium text-white">Loan Type</label>
             <select
               name="loanType"
               value={formData.loanType}
               onChange={handleChange}
               required
-              className="tp-select h-12 px-4 pr-10"
+              className="tp-select h-10 px-3 pr-10"
             >
               <option value="">Select Loan Type</option>
-              <option value="personal-loan">Personal Loan</option>
-              <option value="home-loan">Home Loan</option>
-              <option value="loan-against-property">Loan Against Property</option>
-              <option value="short-term-loan">Short Term Loan</option>
-              <option value="payday-loan">Payday Loan</option>
-              <option value="car-loan">Car Loan</option>
-              <option value="two-wheeler-loan">Two Wheeler Loan</option>
-              <option value="advance-salary">Advance Salary</option>
-              <option value="invoice-finance">Invoice Finance</option>
+              {LOAN_TYPE_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
             </select>
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-white">Monthly Income</label>
+            <label className="mb-1 block text-[13px] font-medium text-white">Monthly Income</label>
             <select
               name="monthlyIncome"
               value={formData.monthlyIncome}
               onChange={handleChange}
               required
-              className="tp-select h-12 px-4 pr-10"
+              className="tp-select h-10 px-3 pr-10"
             >
               <option value="">Select Monthly Income</option>
               <option value="0-15000">Below ₹15,000</option>
@@ -239,15 +236,15 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
             </select>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-3 min-[430px]:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2 min-[430px]:grid-cols-2">
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-white">Employment Type</label>
+            <label className="mb-1 block text-[13px] font-medium text-white">Employment Type</label>
             <select
               name="employmentType"
               value={formData.employmentType}
               onChange={handleChange}
               required
-              className="tp-select h-12 px-4 pr-10"
+              className="tp-select h-10 px-3 pr-10"
             >
               <option value="">Select Employment Type</option>
               <option value="salaried">Salaried</option>
@@ -257,14 +254,14 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
             </select>
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-white">Loan Amount</label>
+            <label className="mb-1 block text-[13px] font-medium text-white">Loan Amount</label>
             <input
               type="number"
               name="loanAmount"
               value={formData.loanAmount}
               onChange={handleChange}
               required
-              className="tp-input h-12 px-4"
+              className="tp-input h-10 px-3"
               placeholder="Enter loan amount"
             />
           </div>
@@ -275,7 +272,7 @@ export default function LoanForm({ defaultLoanType }: LoanFormProps) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="tp-button-primary mt-1 w-full px-6 py-3 text-sm sm:text-base"
+          className="tp-button-primary mt-1 w-full px-6 py-2.5 text-sm sm:text-base"
         >
           {isSubmitting ? 'Submitting...' : 'Continue Application'}
         </button>

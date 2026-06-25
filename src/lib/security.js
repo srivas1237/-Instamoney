@@ -108,6 +108,8 @@ export const secureStorage = {
         const key = localStorage.key(i);
         if (key && (
           key === 'token' || 
+          key === 'user_token' ||
+          key === 'admin_token' ||
           key === 'insta_user' || 
           key === 'admin_user' || 
           key.startsWith('user_')

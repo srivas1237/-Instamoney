@@ -44,7 +44,7 @@ export default function ContactUsPage() {
                 </div>
               ))}
             </div>
-            <div>
+            <div className="flex justify-center lg:justify-end">
               <LoanForm />
             </div>
           </div>

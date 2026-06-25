@@ -88,13 +88,6 @@ export default function LoginPage() {
             {isSubmitting ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
-        
-        <div className="mt-6 text-center text-sm text-[#737780]">
-          <p>Demo credentials:</p>
-          <p className="mt-1">superadmin / SuperAdmin@123</p>
-          <p>admin / Admin@123</p>
-          <p>agent / Agent@123</p>
-        </div>
       </div>
     </div>
   )

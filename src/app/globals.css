@@ -156,6 +156,12 @@ textarea {
   color: var(--tp-text-primary);
 }
 
+.tp-select {
+  color-scheme: dark;
+  background-color: #171717;
+  color: #ffffff;
+}
+
 .tp-input::placeholder,
 .tp-textarea::placeholder {
   color: var(--tp-text-secondary);

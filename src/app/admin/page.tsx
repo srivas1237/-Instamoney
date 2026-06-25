@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
-import { getDashboardStats, getReports } from '@/lib/storage'
+import { getDashboardStats, getLoanTypeLabel, getReports, LOAN_TYPE_OPTIONS } from '@/lib/storage'
 
 type DashboardStats = {
   totalLeads: number
@@ -66,7 +66,7 @@ export default function AdminDashboard() {
 
   const loanTypeData = () => {
     const buckets = Array.isArray(reports?.leadsByType) ? reports!.leadsByType : []
-    return buckets.map((b) => ({ name: b._id, value: b.count }))
+    return buckets.map((b) => ({ name: getLoanTypeLabel(b._id), value: b.count }))
   }
 
   const statusData = () => {
@@ -82,6 +82,8 @@ export default function AdminDashboard() {
     { label: 'In Progress', value: stats?.inProgressLeads ?? 0, color: 'bg-yellow-500' },
     { label: 'Approved', value: stats?.approvedLeads ?? 0, color: 'bg-purple-500' }
   ]
+
+  const leadTypeCount = new Map((Array.isArray(reports?.leadsByType) ? reports!.leadsByType : []).map((b) => [b._id, b.count]))
 
   return (
     <div>
@@ -147,7 +149,29 @@ export default function AdminDashboard() {
           </ResponsiveContainer>
         </div>
       </div>
+
+      <div className="mt-8">
+        <div className="mb-4">
+          <h2 className="text-xl font-semibold text-gray-800">Products</h2>
+          <p className="text-gray-500">A quick snapshot of what customers apply for</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          {LOAN_TYPE_OPTIONS.map((opt) => (
+            <div key={opt.value} className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="text-sm text-gray-500">Product</div>
+                  <div className="mt-1 text-base font-semibold text-gray-900">{opt.label}</div>
+                </div>
+                <div className="min-w-[3.5rem] rounded-lg bg-gray-100 px-3 py-2 text-center">
+                  <div className="text-xs text-gray-500">Leads</div>
+                  <div className="text-lg font-bold text-gray-900">{leadTypeCount.get(opt.value) || 0}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
-

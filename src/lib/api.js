@@ -10,12 +10,12 @@ class ApiClient {
 
   setToken(token) {
     this.token = token;
-    secureStorage.setItem('token', token);
+    secureStorage.setItem('user_token', token);
   }
 
   getToken() {
     if (typeof window !== 'undefined') {
-      return secureStorage.getItem('token');
+      return secureStorage.getItem('user_token') || secureStorage.getItem('token');
     }
     return null;
   }
@@ -38,7 +38,10 @@ class ApiClient {
   }
 
   async request(endpoint, options = {}) {
-    const token = this.getToken();
+    const token =
+      options.token ||
+      (options.tokenKey ? secureStorage.getItem(options.tokenKey) : null) ||
+      this.getToken();
     const headers = {
       'Content-Type': 'application/json',
       ...options.headers,

@@ -67,6 +67,42 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
   agent: ['view_leads', 'edit_leads'],
 };
 
+export const LOAN_TYPE_OPTIONS = [
+  { value: 'personal', label: 'Personal Loan' },
+  { value: 'home', label: 'Home Loan' },
+  { value: 'lap', label: 'Loan Against Property' },
+  { value: 'short-term', label: 'Short Term Loan' },
+  { value: 'payday', label: 'Payday Loan' },
+  { value: 'car', label: 'Car Loan' },
+  { value: 'two-wheeler', label: 'Two Wheeler Loan' },
+  { value: 'advance-salary', label: 'Advance Salary' },
+  { value: 'invoice-finance', label: 'Invoice Finance' },
+  { value: 'merchant-working-capital', label: 'Merchant Loan - Working Capital' },
+  { value: 'msme-secured', label: 'MSME Secured Loan (Up to 5L)' },
+  { value: 'two-wheeler-merchant-program', label: 'Two Wheeler Merchant Program' },
+  { value: 'electronics-partner-program', label: 'Electronics Partner Program' },
+  { value: 'fmcg-distribution-program', label: 'FMCG Distribution Program' },
+  { value: 'cement-dealer-program', label: 'Cement Dealer Program' },
+  { value: 'paint-dealer-program', label: 'Paint Dealer Program' },
+  { value: 'tyre-dealer-program', label: 'Tyre Dealer Program' },
+] as const;
+
+export const getLoanTypeLabel = (value: string) => {
+  const normalized = (() => {
+    if (!value) return value;
+    if (value === 'personal-loan') return 'personal';
+    if (value === 'home-loan') return 'home';
+    if (value === 'loan-against-property') return 'lap';
+    if (value === 'short-term-loan') return 'short-term';
+    if (value === 'payday-loan') return 'payday';
+    if (value === 'car-loan') return 'car';
+    if (value === 'two-wheeler-loan') return 'two-wheeler';
+    return value;
+  })();
+  const match = LOAN_TYPE_OPTIONS.find((opt) => opt.value === normalized);
+  return match ? match.label : value;
+};
+
 const isMongoObjectId = (value: unknown): value is string => {
   return typeof value === 'string' && /^[a-f0-9]{24}$/i.test(value);
 };
@@ -111,6 +147,7 @@ export const setCurrentUser = (user: InstaUser | null) => {
     secureStorage.setItem('insta_user', userData);
   } else {
     secureStorage.removeItem('insta_user');
+    secureStorage.removeItem('user_token');
     secureStorage.removeItem('token');
   }
 };
@@ -143,6 +180,7 @@ export const setCurrentAdminUser = (user: InstaAdminUser | null) => {
     secureStorage.setItem('admin_user', userData);
   } else {
     secureStorage.removeItem('admin_user');
+    secureStorage.removeItem('admin_token');
     secureStorage.removeItem('token');
   }
 };
@@ -161,7 +199,7 @@ export const userSignup = async (data: { name: string; email: string; phone: str
   };
   
   const result = await api.post('/auth/user/signup', sanitizedData);
-  secureStorage.setItem('token', result.token);
+  secureStorage.setItem('user_token', result.token);
   setCurrentUser(result.user);
   return result;
 };
@@ -176,7 +214,7 @@ export const userLogin = async (data: { email: string; password: string }) => {
   };
   
   const result = await api.post('/auth/user/login', sanitizedData);
-  secureStorage.setItem('token', result.token);
+  secureStorage.setItem('user_token', result.token);
   setCurrentUser(result.user);
   return result;
 };
@@ -190,10 +228,26 @@ export const adminLogin = async (data: { username: string; password: string }) =
     password: data.password, // Don't sanitize password
   };
   
-  const result = await api.post('/auth/admin/login', sanitizedData);
-  secureStorage.setItem('token', result.token);
-  setCurrentAdminUser(result.admin);
-  return result;
+  const traceId = `admin-login-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+  const debugUrl = process.env.NEXT_PUBLIC_DEBUG_SERVER_URL || 'http://127.0.0.1:7778/event';
+  const debugRunId = process.env.NEXT_PUBLIC_DEBUG_RUN_ID || 'pre-fix';
+  // #region debug-point A:frontend-admin-login-request
+  fetch(debugUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'admin-login-fails', runId: debugRunId, hypothesisId: 'A', traceId, location: 'src/lib/storage.ts:adminLogin', msg: '[DEBUG] Admin login request', data: { apiBaseUrl: (api as any)?.baseURL, endpoint: '/auth/admin/login', username: sanitizedData.username, passwordLen: typeof data.password === 'string' ? data.password.length : 0 }, ts: Date.now() }) }).catch(() => {});
+  // #endregion
+  try {
+    const result = await api.post('/auth/admin/login', sanitizedData, { headers: { 'x-trace-id': traceId } });
+    // #region debug-point E:frontend-admin-login-success
+    fetch(debugUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'admin-login-fails', runId: debugRunId, hypothesisId: 'E', traceId, location: 'src/lib/storage.ts:adminLogin', msg: '[DEBUG] Admin login success', data: { hasToken: Boolean(result?.token), adminUsername: result?.admin?.username, adminRole: result?.admin?.role }, ts: Date.now() }) }).catch(() => {});
+    // #endregion
+    secureStorage.setItem('admin_token', result.token);
+    setCurrentAdminUser(result.admin);
+    return result;
+  } catch (err) {
+    // #region debug-point A:frontend-admin-login-error
+    fetch(debugUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'admin-login-fails', runId: debugRunId, hypothesisId: 'A', traceId, location: 'src/lib/storage.ts:adminLogin', msg: '[DEBUG] Admin login failed', data: { error: err instanceof Error ? err.message : String(err) }, ts: Date.now() }) }).catch(() => {});
+    // #endregion
+    throw err;
+  }
 };
 
 /**
@@ -223,7 +277,7 @@ export const createLead = async (data: any) => {
 };
 
 export const getLeads = async () => {
-  return api.get('/leads');
+  return api.get('/leads', { tokenKey: 'admin_token' } as any);
 };
 
 export const updateLead = async (id: string, data: any) => {
@@ -232,23 +286,23 @@ export const updateLead = async (id: string, data: any) => {
     notes: data.notes ? sanitizeInput(data.notes) : undefined,
   };
   
-  const result = await api.put(`/leads/${id}`, sanitizedData);
+  const result = await api.put(`/leads/${id}`, sanitizedData, { tokenKey: 'admin_token' } as any);
   emitLeadsUpdated();
   return result;
 };
 
 export const deleteLead = async (id: string) => {
-  const result = await api.delete(`/leads/${id}`);
+  const result = await api.delete(`/leads/${id}`, { tokenKey: 'admin_token' } as any);
   emitLeadsUpdated();
   return result;
 };
 
 export const getDashboardStats = async () => {
-  return api.get('/admin/dashboard');
+  return api.get('/admin/dashboard', { tokenKey: 'admin_token' } as any);
 };
 
 export const getCases = async () => {
-  return api.get('/admin/cases');
+  return api.get('/admin/cases', { tokenKey: 'admin_token' } as any);
 };
 
 export const createCase = async (data: any) => {
@@ -260,7 +314,7 @@ export const createCase = async (data: any) => {
     assignedTo: data.assignedTo,
   };
   
-  return api.post('/admin/cases', sanitizedData);
+  return api.post('/admin/cases', sanitizedData, { tokenKey: 'admin_token' } as any);
 };
 
 export const updateCase = async (id: string, data: any) => {
@@ -271,15 +325,15 @@ export const updateCase = async (id: string, data: any) => {
     resolution: data.resolution ? sanitizeInput(data.resolution) : undefined,
   };
   
-  return api.put(`/admin/cases/${id}`, sanitizedData);
+  return api.put(`/admin/cases/${id}`, sanitizedData, { tokenKey: 'admin_token' } as any);
 };
 
 export const getReports = async () => {
-  return api.get('/admin/reports');
+  return api.get('/admin/reports', { tokenKey: 'admin_token' } as any);
 };
 
 export const getAdminUsers = async () => {
-  return api.get('/users/admin');
+  return api.get('/users/admin', { tokenKey: 'admin_token' } as any);
 };
 
 export const createAdminUser = async (data: any) => {
@@ -295,7 +349,7 @@ export const createAdminUser = async (data: any) => {
     password: data.password,
   };
   
-  return api.post('/users/admin', sanitizedData);
+  return api.post('/users/admin', sanitizedData, { tokenKey: 'admin_token' } as any);
 };
 
 export const updateAdminUser = async (id: string, data: any) => {
@@ -306,15 +360,15 @@ export const updateAdminUser = async (id: string, data: any) => {
     phone: data.phone ? sanitizeInput(data.phone) : undefined,
   };
   
-  return api.put(`/users/admin/${id}`, sanitizedData);
+  return api.put(`/users/admin/${id}`, sanitizedData, { tokenKey: 'admin_token' } as any);
 };
 
 export const deleteAdminUser = async (id: string) => {
-  return api.delete(`/users/admin/${id}`);
+  return api.delete(`/users/admin/${id}`, { tokenKey: 'admin_token' } as any);
 };
 
 export const getAdminProfile = async () => {
-  return api.get('/users/admin/profile');
+  return api.get('/users/admin/profile', { tokenKey: 'admin_token' } as any);
 };
 
 export const updateAdminProfile = async (data: any) => {
@@ -324,11 +378,11 @@ export const updateAdminProfile = async (data: any) => {
     phone: data.phone ? sanitizeInput(data.phone) : undefined,
   };
   
-  return api.put('/users/admin/profile', sanitizedData);
+  return api.put('/users/admin/profile', sanitizedData, { tokenKey: 'admin_token' } as any);
 };
 
 export const getUserProfile = async () => {
-  return api.get('/users/profile');
+  return api.get('/users/profile', { tokenKey: 'user_token' } as any);
 };
 
 export const updateUserProfile = async (data: any) => {
@@ -341,11 +395,11 @@ export const updateUserProfile = async (data: any) => {
     address: data.address ? sanitizeInput(data.address) : undefined,
   };
   
-  return api.put('/users/profile', sanitizedData);
+  return api.put('/users/profile', sanitizedData, { tokenKey: 'user_token' } as any);
 };
 
 export const getUserLeads = async (userId: string) => {
-  return api.get(`/leads/user/${userId}`);
+  return api.get(`/leads/user/${userId}`, { tokenKey: 'user_token' } as any);
 };
 
 // Keep these for backward compatibility but mark as deprecated

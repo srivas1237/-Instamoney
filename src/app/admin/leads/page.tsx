@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Plus, User, Phone, Mail, DollarSign, ArrowRight, Trash2 } from 'lucide-react'
-import { createLead, deleteLead, getCurrentAdminUser, getLeads, InstaLead, InstaAdminUser, updateLead } from '@/lib/storage'
+import { Download, Plus, User, Phone, Mail, DollarSign, ArrowRight, Trash2 } from 'lucide-react'
+import { createLead, deleteLead, getCurrentAdminUser, getLeads, getLoanTypeLabel, InstaLead, InstaAdminUser, LOAN_TYPE_OPTIONS, updateLead } from '@/lib/storage'
 
 const normalizeLeads = (data: any): InstaLead[] => {
   if (!Array.isArray(data)) return []
@@ -24,7 +24,7 @@ export default function LeadsPage() {
     name: '',
     phone: '',
     email: '',
-    loanType: 'personal-loan',
+    loanType: 'personal',
     amount: '',
     notes: '',
   })
@@ -32,19 +32,75 @@ export default function LeadsPage() {
   useEffect(() => {
     const currentUser = getCurrentAdminUser()
     setUser(currentUser)
-    ;(async () => {
+    let isMounted = true
+    const refresh = async (showLoading: boolean) => {
+      if (showLoading) setIsLoading(true)
       try {
         const data = await getLeads()
+        if (!isMounted) return
         setLeadsState(normalizeLeads(data))
       } finally {
-        setIsLoading(false)
+        if (showLoading && isMounted) setIsLoading(false)
       }
-    })()
+    }
+
+    refresh(true)
+
+    const onLeadsUpdated = () => refresh(false)
+    window.addEventListener('kashless:leads_updated', onLeadsUpdated)
+
+    let bc: BroadcastChannel | null = null
+    try {
+      bc = new BroadcastChannel('kashless')
+      bc.onmessage = (event) => {
+        if (event?.data?.type === 'leads_updated') refresh(false)
+      }
+    } catch {}
+
+    const intervalId = window.setInterval(() => refresh(false), 10000)
+
+    return () => {
+      isMounted = false
+      window.removeEventListener('kashless:leads_updated', onLeadsUpdated)
+      if (bc) bc.close()
+      window.clearInterval(intervalId)
+    }
   }, [])
 
   const filteredLeads = filterStatus === 'all' 
     ? leads 
     : leads.filter(lead => lead.status === filterStatus)
+
+  const exportCsv = () => {
+    const escapeValue = (value: unknown) => {
+      const raw = value === null || value === undefined ? '' : String(value)
+      const escaped = raw.replace(/"/g, '""')
+      return /[",\n]/.test(escaped) ? `"${escaped}"` : escaped
+    }
+
+    const header = ['Name', 'Phone', 'Email', 'Loan Type', 'Amount', 'Status', 'Created At', 'Notes']
+    const rows = (Array.isArray(filteredLeads) ? filteredLeads : []).map((lead) => [
+      escapeValue(lead.name),
+      escapeValue(lead.phone),
+      escapeValue(lead.email),
+      escapeValue(getLoanTypeLabel(lead.loanType || '')),
+      escapeValue(lead.amount),
+      escapeValue(lead.status),
+      escapeValue(lead.createdAt),
+      escapeValue(lead.notes || ''),
+    ])
+
+    const csv = ['\uFEFF' + header.join(','), ...rows.map((r) => r.join(','))].join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `kashless-leads-${new Date().toISOString().slice(0, 10)}.csv`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+  }
 
   const hasPermission = (permission: string) => {
     if (!user) return false
@@ -106,7 +162,7 @@ export default function LeadsPage() {
         name: '',
         phone: '',
         email: '',
-        loanType: 'personal-loan',
+        loanType: 'personal',
         amount: '',
         notes: '',
       })
@@ -126,14 +182,21 @@ export default function LeadsPage() {
     <div>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Leads</h1>
-          <p className="text-gray-500">Manage all loan applications</p>
+          <h1 className="text-2xl font-bold text-white">Leads</h1>
+          <p className="text-[#737780]">Manage all loan applications</p>
         </div>
         <div className="flex gap-3">
+          <button
+            onClick={exportCsv}
+            className="flex items-center gap-2 rounded-lg border border-white/15 bg-black/20 px-4 py-2 text-white hover:border-[#ff825c]/40 hover:bg-white/5 transition-colors"
+          >
+            <Download className="h-5 w-5" />
+            Export CSV
+          </button>
           <select 
             value={filterStatus} 
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg"
+            className="tp-select h-10 px-3 pr-10"
           >
             <option value="all">All Statuses</option>
             <option value="new">New</option>
@@ -154,41 +217,41 @@ export default function LeadsPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="tp-card overflow-hidden">
         {isLoading && (
-          <div className="p-6 text-sm text-gray-500">Loading leads...</div>
+          <div className="p-6 text-sm text-[#737780]">Loading leads...</div>
         )}
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-black/30 border-b border-white/10">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loan Type</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#737780] uppercase tracking-wider">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#737780] uppercase tracking-wider">Phone</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#737780] uppercase tracking-wider">Email</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#737780] uppercase tracking-wider">Loan Type</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#737780] uppercase tracking-wider">Amount</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#737780] uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#737780] uppercase tracking-wider">Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#737780] uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-black/10 divide-y divide-white/10">
               {(Array.isArray(filteredLeads) ? filteredLeads : []).map((lead) => (
-                <tr key={lead.id} className="hover:bg-gray-50">
+                <tr key={lead.id} className="hover:bg-white/5">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{lead.name}</div>
+                    <div className="text-sm font-medium text-white">{lead.name}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{lead.phone}</div>
+                    <div className="text-sm text-[#f5f5f5]">{lead.phone}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{lead.email}</div>
+                    <div className="text-sm text-[#f5f5f5]">{lead.email}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 capitalize">{lead.loanType.replace(/-/g, ' ')}</div>
+                    <div className="text-sm text-[#f5f5f5]">{getLoanTypeLabel(lead.loanType || '')}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{lead.amount ? '₹' + lead.amount : '-'}</div>
+                    <div className="text-sm text-[#f5f5f5]">{lead.amount ? '₹' + lead.amount : '-'}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -201,7 +264,7 @@ export default function LeadsPage() {
                       {lead.status.replace(/_/g, ' ')}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#737780]">
                     {new Date(lead.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -210,7 +273,7 @@ export default function LeadsPage() {
                         <select 
                           value={lead.status} 
                           onChange={(e) => updateLeadStatus(lead.id, e.target.value as any)}
-                          className="px-3 py-1 border border-gray-300 rounded text-sm"
+                          className="tp-select h-9 px-2.5 pr-8 text-sm"
                         >
                           <option value="new">New</option>
                           <option value="in_progress">In Progress</option>
@@ -237,14 +300,14 @@ export default function LeadsPage() {
 
         {(Array.isArray(filteredLeads) ? filteredLeads.length : 0) === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500">No leads found</p>
+            <p className="text-[#737780]">No leads found</p>
           </div>
         )}
       </div>
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl">
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">Add New Lead</h3>
@@ -262,46 +325,65 @@ export default function LeadsPage() {
                     {submitError}
                   </div>
                 )}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-                    <User className="h-4 w-4" />
-                    Full Name
-                  </label>
-                  <input
-                    required
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
-                  />
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                      <User className="h-4 w-4" />
+                      Full Name
+                    </label>
+                    <input
+                      required
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                      <Phone className="h-4 w-4" />
+                      Phone Number
+                    </label>
+                    <input
+                      required
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-                    <Phone className="h-4 w-4" />
-                    Phone Number
-                  </label>
-                  <input
-                    required
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
-                  />
-                </div>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                      <Mail className="h-4 w-4" />
+                      Email
+                    </label>
+                    <input
+                      required
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-                    <Mail className="h-4 w-4" />
-                    Email
-                  </label>
-                  <input
-                    required
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
-                  />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                      <DollarSign className="h-4 w-4" />
+                      Loan Amount
+                    </label>
+                    <input
+                      required
+                      type="number"
+                      value={formData.amount}
+                      onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                      placeholder="Enter amount"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -309,33 +391,14 @@ export default function LeadsPage() {
                   <select
                     value={formData.loanType}
                     onChange={(e) => setFormData({ ...formData, loanType: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
+                    className="tp-select h-10 px-3 pr-10"
                   >
-                    <option value="personal-loan">Personal Loan</option>
-                    <option value="home-loan">Home Loan</option>
-                    <option value="loan-against-property">Loan Against Property</option>
-                    <option value="short-term-loan">Short Term Loan</option>
-                    <option value="payday-loan">Payday Loan</option>
-                    <option value="car-loan">Car Loan</option>
-                    <option value="two-wheeler-loan">Two Wheeler Loan</option>
-                    <option value="advance-salary">Advance Salary</option>
-                    <option value="invoice-finance">Invoice Finance</option>
+                    {LOAN_TYPE_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
                   </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-                    <DollarSign className="h-4 w-4" />
-                    Loan Amount
-                  </label>
-                  <input
-                    required
-                    type="number"
-                    value={formData.amount}
-                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                    placeholder="Enter amount"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0052ff] focus:border-transparent"
-                  />
                 </div>
 
                 <div>
