@@ -228,26 +228,10 @@ export const adminLogin = async (data: { username: string; password: string }) =
     password: data.password, // Don't sanitize password
   };
   
-  const traceId = `admin-login-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
-  const debugUrl = process.env.NEXT_PUBLIC_DEBUG_SERVER_URL || 'http://127.0.0.1:7778/event';
-  const debugRunId = process.env.NEXT_PUBLIC_DEBUG_RUN_ID || 'pre-fix';
-  // #region debug-point A:frontend-admin-login-request
-  fetch(debugUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'admin-login-fails', runId: debugRunId, hypothesisId: 'A', traceId, location: 'src/lib/storage.ts:adminLogin', msg: '[DEBUG] Admin login request', data: { apiBaseUrl: (api as any)?.baseURL, endpoint: '/auth/admin/login', username: sanitizedData.username, passwordLen: typeof data.password === 'string' ? data.password.length : 0 }, ts: Date.now() }) }).catch(() => {});
-  // #endregion
-  try {
-    const result = await api.post('/auth/admin/login', sanitizedData, { headers: { 'x-trace-id': traceId } });
-    // #region debug-point E:frontend-admin-login-success
-    fetch(debugUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'admin-login-fails', runId: debugRunId, hypothesisId: 'E', traceId, location: 'src/lib/storage.ts:adminLogin', msg: '[DEBUG] Admin login success', data: { hasToken: Boolean(result?.token), adminUsername: result?.admin?.username, adminRole: result?.admin?.role }, ts: Date.now() }) }).catch(() => {});
-    // #endregion
-    secureStorage.setItem('admin_token', result.token);
-    setCurrentAdminUser(result.admin);
-    return result;
-  } catch (err) {
-    // #region debug-point A:frontend-admin-login-error
-    fetch(debugUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'admin-login-fails', runId: debugRunId, hypothesisId: 'A', traceId, location: 'src/lib/storage.ts:adminLogin', msg: '[DEBUG] Admin login failed', data: { error: err instanceof Error ? err.message : String(err) }, ts: Date.now() }) }).catch(() => {});
-    // #endregion
-    throw err;
-  }
+  const result = await api.post('/auth/admin/login', sanitizedData);
+  secureStorage.setItem('admin_token', result.token);
+  setCurrentAdminUser(result.admin);
+  return result;
 };
 
 /**
